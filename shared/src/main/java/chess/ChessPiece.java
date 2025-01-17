@@ -95,9 +95,35 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> Rookmoves(ChessPosition position) {
+    public Collection<ChessMove> Rookmoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition original = position;
+
+        rook(board, original, original, moves, 1, 0);
+        rook(board, original, original, moves, -1, 0);
+        rook(board, original, original, moves, 0, 1);
+        rook(board, original, original, moves, 0, -1);
+
         return moves;
+    }
+
+    public void rook(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y) {
+        ChessPosition newposition = new ChessPosition(position.getRow()+x, position.getColumn()+y);
+        if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
+            return;
+        } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
+            return;
+        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
+            return;
+        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
+            ChessMove move = new ChessMove(original, newposition, null);
+            moves.add(move);
+            return;
+        }
+ 
+        ChessMove move = new ChessMove(original, newposition, null);
+        moves.add(move);
+        rook(board, original, newposition, moves, x, y);
     }
 
     /**
@@ -120,7 +146,7 @@ public class ChessPiece {
             case QUEEN:
                 return Queenmoves(myPosition);
             case ROOK:
-                return Rookmoves(myPosition);
+                return Rookmoves(board, myPosition);
             default:
                 throw new RuntimeException("Incorrect");
         }
