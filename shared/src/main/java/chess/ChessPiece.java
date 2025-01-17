@@ -90,8 +90,20 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> Queenmoves(ChessPosition position) {
+    public Collection<ChessMove> Queenmoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition original = position;
+
+        bishop(board, original, original, moves, 1, 1);
+        bishop(board, original, original, moves, -1, 1);
+        bishop(board, original, original, moves, 1, -1);
+        bishop(board, original, original, moves, -1, -1);
+
+        rook(board, original, original, moves, 1, 0);
+        rook(board, original, original, moves, -1, 0);
+        rook(board, original, original, moves, 0, 1);
+        rook(board, original, original, moves, 0, -1);
+
         return moves;
     }
 
@@ -144,7 +156,7 @@ public class ChessPiece {
             case PAWN:
                 return Pawnmoves(myPosition);
             case QUEEN:
-                return Queenmoves(myPosition);
+                return Queenmoves(board, myPosition);
             case ROOK:
                 return Rookmoves(board, myPosition);
             default:
