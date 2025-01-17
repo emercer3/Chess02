@@ -48,15 +48,15 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
-        bishop(board, original, original, moves, 1, 1);
-        bishop(board, original, original, moves, -1, 1);
-        bishop(board, original, original, moves, 1, -1);
-        bishop(board, original, original, moves, -1, -1);
+        bishop(board, original, original, moves, 1, 1, false);
+        bishop(board, original, original, moves, -1, 1, false);
+        bishop(board, original, original, moves, 1, -1, false);
+        bishop(board, original, original, moves, -1, -1, false);
 
         return moves;
     }
 
-    public void bishop(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y) {
+    public void bishop(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, boolean once) {
         ChessPosition newposition = new ChessPosition(position.getRow()+x, position.getColumn()+y);
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
@@ -72,11 +72,26 @@ public class ChessPiece {
  
         ChessMove move = new ChessMove(original, newposition, null);
         moves.add(move);
-        bishop(board, original, newposition, moves, x, y);
+        if (once) {
+            return;
+        }
+        bishop(board, original, newposition, moves, x, y, false);
     }
 
-    public Collection<ChessMove> Kingmoves(ChessPosition position) {
+    public Collection<ChessMove> Kingmoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition original = position;
+
+        bishop(board, original, original, moves, 1, 1, true);
+        bishop(board, original, original, moves, -1, 1, true);
+        bishop(board, original, original, moves, 1, -1, true);
+        bishop(board, original, original, moves, -1, -1, true);
+
+        rook(board, original, original, moves, 1, 0, true);
+        rook(board, original, original, moves, -1, 0, true);
+        rook(board, original, original, moves, 0, 1, true);
+        rook(board, original, original, moves, 0, -1, true);
+
         return moves;
     }
 
@@ -84,20 +99,21 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
-        knight(board, original, original, moves, 1, 2);
-        knight(board, original, original, moves, -1, -2);
-        knight(board, original, original, moves, 2, 1);
-        knight(board, original, original, moves, -2, -1);
-        knight(board, original, original, moves, -1, 2);
-        knight(board, original, original, moves, 1, -2);
-        knight(board, original, original, moves, 2, -1);
-        knight(board, original, original, moves, -2, 1);
+        knight(board, original, original, moves, 1, 2, 0);
+        knight(board, original, original, moves, 2, 1, 0);
+        knight(board, original, original, moves, -1, 2, 0);
+        knight(board, original, original, moves, 2, -1, 0);
 
         return moves;
     }
 
-    public void knight(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y) {
+    public void knight(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, int count) {
         ChessPosition newposition = new ChessPosition(position.getRow()+x, position.getColumn()+y);
+        if (count == 2) {
+            return;
+        } 
+        knight(board, original, original, moves, -1*x, -1*y, count+1);
+
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
         } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
@@ -123,15 +139,15 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
-        bishop(board, original, original, moves, 1, 1);
-        bishop(board, original, original, moves, -1, 1);
-        bishop(board, original, original, moves, 1, -1);
-        bishop(board, original, original, moves, -1, -1);
+        bishop(board, original, original, moves, 1, 1, false);
+        bishop(board, original, original, moves, -1, 1, false);
+        bishop(board, original, original, moves, 1, -1, false);
+        bishop(board, original, original, moves, -1, -1, false);
 
-        rook(board, original, original, moves, 1, 0);
-        rook(board, original, original, moves, -1, 0);
-        rook(board, original, original, moves, 0, 1);
-        rook(board, original, original, moves, 0, -1);
+        rook(board, original, original, moves, 1, 0, false);
+        rook(board, original, original, moves, -1, 0, false);
+        rook(board, original, original, moves, 0, 1, false);
+        rook(board, original, original, moves, 0, -1, false);
 
         return moves;
     }
@@ -140,15 +156,15 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
-        rook(board, original, original, moves, 1, 0);
-        rook(board, original, original, moves, -1, 0);
-        rook(board, original, original, moves, 0, 1);
-        rook(board, original, original, moves, 0, -1);
+        rook(board, original, original, moves, 1, 0, false);
+        rook(board, original, original, moves, -1, 0, false);
+        rook(board, original, original, moves, 0, 1, false);
+        rook(board, original, original, moves, 0, -1, false);
 
         return moves;
     }
 
-    public void rook(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y) {
+    public void rook(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, boolean once) {
         ChessPosition newposition = new ChessPosition(position.getRow()+x, position.getColumn()+y);
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
@@ -164,7 +180,10 @@ public class ChessPiece {
  
         ChessMove move = new ChessMove(original, newposition, null);
         moves.add(move);
-        rook(board, original, newposition, moves, x, y);
+        if (once) {
+            return;
+        }
+        rook(board, original, newposition, moves, x, y, false);
     }
 
     /**
@@ -179,7 +198,7 @@ public class ChessPiece {
             case BISHOP:
                 return Bishopmoves(board, myPosition);
             case KING:
-                return Kingmoves(myPosition);
+                return Kingmoves(board, myPosition);
             case KNIGHT:
                 return Knightmoves(board, myPosition);
             case PAWN:
