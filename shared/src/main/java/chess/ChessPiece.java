@@ -80,9 +80,38 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> Knightmoves(ChessPosition position) {
+    public Collection<ChessMove> Knightmoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition original = position;
+
+        knight(board, original, original, moves, 1, 2);
+        knight(board, original, original, moves, -1, -2);
+        knight(board, original, original, moves, 2, 1);
+        knight(board, original, original, moves, -2, -1);
+        knight(board, original, original, moves, -1, 2);
+        knight(board, original, original, moves, 1, -2);
+        knight(board, original, original, moves, 2, -1);
+        knight(board, original, original, moves, -2, 1);
+
         return moves;
+    }
+
+    public void knight(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y) {
+        ChessPosition newposition = new ChessPosition(position.getRow()+x, position.getColumn()+y);
+        if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
+            return;
+        } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
+            return;
+        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
+            return;
+        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
+            ChessMove move = new ChessMove(original, newposition, null);
+            moves.add(move);
+            return;
+        }
+ 
+        ChessMove move = new ChessMove(original, newposition, null);
+        moves.add(move);
     }
 
     public Collection<ChessMove> Pawnmoves(ChessPosition position) {
@@ -152,7 +181,7 @@ public class ChessPiece {
             case KING:
                 return Kingmoves(myPosition);
             case KNIGHT:
-                return Knightmoves(myPosition);
+                return Knightmoves(board, myPosition);
             case PAWN:
                 return Pawnmoves(myPosition);
             case QUEEN:
