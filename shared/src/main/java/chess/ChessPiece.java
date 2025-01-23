@@ -15,6 +15,33 @@ public class ChessPiece {
     private final ChessPiece.PieceType type;
     private final ChessGame.TeamColor pieceColor;
 
+    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((pieceColor == null) ? 0 : pieceColor.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ChessPiece other = (ChessPiece) obj;
+        if (type != other.type)
+            return false;
+        if (pieceColor != other.pieceColor)
+            return false;
+        return true;
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -171,41 +198,6 @@ public class ChessPiece {
         if (board.getPiece(frist) == null && board.getPiece(second) == null) {
             moveadder(moves, position, second, false);
         }
-    }
-
-    public void pawn(ChessBoard board, ChessPosition original, Collection<ChessMove> moves, int x, int y) {
-        ChessPosition newposition = new ChessPosition(original.getRow()+y, original.getColumn()+x);
-        if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
-            return;
-        } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
-            return;
-        } 
-
-
-
-
-
-
-        // else if (x == 0 && board.getPiece(newposition) == null && newposition.getRow() != 8 && newposition.getRow() != 1) {
-        //     moveadder(moves, original, newposition, promotiontype, false);
-        //     return;
-        // } 
-
-        // if (newposition.getRow() == 8 || newposition.getRow() == 1) {
-        //     if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
-        //         moveadder(moves, original, newposition, promotiontype, true);
-        //         return;
-        //     } else if (x == 0){
-        //         moveadder(moves, original, newposition, promotiontype, true);
-        //         return;
-        //     }
-        // } else {
-        //     if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
-        //         moveadder(moves, original, newposition, promotiontype, false);
-        //         return;
-        //     } 
-        // }
-
     }
 
     public void moveadder(Collection<ChessMove> moves, ChessPosition original, ChessPosition newposition, boolean all) {
