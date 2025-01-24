@@ -13,21 +13,6 @@ public class ChessMove {
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
-    
-
-    // @Override
-    // public boolean equals(Object o) {
-    //     if (o == null) {
-    //         return false;
-    //     } if (o.getClass() != this.getClass()) {
-    //         return false;
-    //     } 
-
-    //     ChessMove that = (ChessMove) o;
-    //     return Objects.equals(startPosition, that.startPosition) &&
-    //      Objects.equals(endPosition, that.endPosition) &&
-    //      Objects.equals(promotionPiece, that.promotionPiece);
-    // }
 
     @Override
     public boolean equals(Object obj) {
