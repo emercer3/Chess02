@@ -35,6 +35,7 @@ public class ChessBoard {
             return false;
         return true;
     }
+    
 
     /**
      * Adds a chess piece to the chessboard
@@ -90,6 +91,7 @@ public class ChessBoard {
                 squares[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
                 squares[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
             }
+            
         }
     }
 }
