@@ -35,6 +35,21 @@ public class ChessBoard {
             return false;
         return true;
     }
+
+    // copilot generated
+    public ChessBoard copy() {
+        ChessBoard newBoard = new ChessBoard();
+        // Assuming you have a method to get all pieces and their positions
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPiece piece = this.getPiece(new ChessPosition(i, j));
+                if (piece != null) {
+                    newBoard.addPiece(new ChessPosition(i, j), piece.copy());
+                }
+            }
+        }
+        return newBoard;
+    }
     
 
     /**

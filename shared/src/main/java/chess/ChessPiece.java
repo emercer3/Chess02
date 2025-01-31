@@ -47,6 +47,12 @@ public class ChessPiece {
         this.type = type;
     }
 
+    // copilot generated
+    public ChessPiece copy() {
+        // Create a new instance of the piece with the same properties
+        return new ChessPiece(this.pieceColor, this.type);
+    }
+
     /**
      * The various different chess piece options
      */
