@@ -30,11 +30,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (turn == TeamColor.WHITE) {
-            turn = TeamColor.BLACK;
-        } else {
-            turn = TeamColor.WHITE;
-        }
+        turn = team;
     }
 
     /**
@@ -133,12 +129,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (validMoves(move.getStartPosition()).contains(move)) {
+        if (board.getPiece(move.getStartPosition()) == null) {
+            throw new InvalidMoveException();
+        } else if (validMoves(move.getStartPosition()).contains(move)) {
             ChessPiece piece = board.getPiece(move.getStartPosition());
             if (piece.getTeamColor() == turn) {
-                board.addPiece(move.getEndPosition(), piece);
-                board.addPiece(move.getStartPosition(), null);
-                setTeamTurn(turn);
+                if (move.getPromotionPiece() != null) {
+                    board.addPiece(move.getEndPosition(), new ChessPiece(turn, move.getPromotionPiece()));
+                    board.addPiece(move.getStartPosition(), null);
+                } else {
+                    board.addPiece(move.getEndPosition(), piece);
+                    board.addPiece(move.getStartPosition(), null);
+                }
+                
+                if (turn == ChessGame.TeamColor.WHITE) {
+                    setTeamTurn(ChessGame.TeamColor.BLACK);
+                } else {
+                    setTeamTurn(ChessGame.TeamColor.WHITE);
+                }
+            } 
+            else {
+                throw new InvalidMoveException();
             }
         } else {
             throw new InvalidMoveException();
