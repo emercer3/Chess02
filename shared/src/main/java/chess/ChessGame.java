@@ -41,9 +41,6 @@ public class ChessGame {
         BLACK
     }
 
-
-
-
     private boolean canKingEscape(ChessPosition position, Collection<ChessMove> moves, TeamColor teamcolor) {
         ChessBoard boardcopy = board.copy();
         for (ChessMove move : moves) {
@@ -141,7 +138,7 @@ public class ChessGame {
                     board.addPiece(move.getEndPosition(), piece);
                     board.addPiece(move.getStartPosition(), null);
                 }
-                
+
                 if (turn == ChessGame.TeamColor.WHITE) {
                     setTeamTurn(ChessGame.TeamColor.BLACK);
                 } else {
@@ -258,9 +255,9 @@ public class ChessGame {
                     }   
                 }
             }
-        }
-        if (moves.isEmpty()) {
-            return true;
+            if (moves.isEmpty()) {
+                return true;
+            }
         }
         return false;
     }
