@@ -79,7 +79,7 @@ public class ChessPiece {
         return type;
     }
 
-    public Collection<ChessMove> Bishopmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -100,11 +100,11 @@ public class ChessPiece {
         } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
             return;
         } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
-            moveadder(moves, original, newposition, promote);
+            moveAdder(moves, original, newposition, promote);
             return;
         }
         if (board.getPiece(original).getPieceType() != PieceType.PAWN) {
-            moveadder(moves, original, newposition, promote);
+            moveAdder(moves, original, newposition, promote);
         }
         if (once) {
             return;
@@ -112,7 +112,7 @@ public class ChessPiece {
         bishop(board, original, newposition, moves, x, y, false, promote);
     }
 
-    public Collection<ChessMove> Kingmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -129,7 +129,7 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> Knightmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -155,14 +155,14 @@ public class ChessPiece {
         } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
             return;
         } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
-            moveadder(moves, original, newposition, false);
+            moveAdder(moves, original, newposition, false);
             return;
         }
  
-        moveadder(moves, original, newposition, false);
+        moveAdder(moves, original, newposition, false);
     }
 
-    public Collection<ChessMove> Pawnmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -174,7 +174,7 @@ public class ChessPiece {
                 return moves;
             } 
             if (position.getRow() == 2) {
-                pawnfirstmove(board, position, moves, 1);
+                pawnFirstMove(board, position, moves, 1);
             } 
             rook(board, original, position, moves, 0, 1, true, false);
             bishop(board, original, position, moves, 1, 1, true, false);
@@ -187,7 +187,7 @@ public class ChessPiece {
                 return moves;
             } 
             if (position.getRow() == 7) {
-                pawnfirstmove(board, position, moves, -1);
+                pawnFirstMove(board, position, moves, -1);
             } 
             rook(board, original, position, moves, 0, -1, true, false);
             bishop(board, original, position, moves, 1, -1, true, false);
@@ -197,16 +197,16 @@ public class ChessPiece {
         return moves;
     }
 
-    public void pawnfirstmove(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int direction) {
+    public void pawnFirstMove(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int direction) {
         ChessPosition frist = new ChessPosition(position.getRow()+(1*direction), position.getColumn());
         ChessPosition second = new ChessPosition(position.getRow()+(2*direction), position.getColumn());
         
         if (board.getPiece(frist) == null && board.getPiece(second) == null) {
-            moveadder(moves, position, second, false);
+            moveAdder(moves, position, second, false);
         }
     }
 
-    public void moveadder(Collection<ChessMove> moves, ChessPosition original, ChessPosition newposition, boolean all) {
+    public void moveAdder(Collection<ChessMove> moves, ChessPosition original, ChessPosition newposition, boolean all) {
         if (all) {
             ChessMove moveq = new ChessMove(original, newposition, ChessPiece.PieceType.QUEEN);
             ChessMove moveb = new ChessMove(original, newposition, ChessPiece.PieceType.BISHOP);
@@ -222,7 +222,7 @@ public class ChessPiece {
         }
     }
 
-    public Collection<ChessMove> Queenmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -239,7 +239,7 @@ public class ChessPiece {
         return moves;
     }
 
-    public Collection<ChessMove> Rookmoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPosition original = position;
 
@@ -261,12 +261,12 @@ public class ChessPiece {
             return;
         } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
             if (board.getPiece(original).getPieceType() != PieceType.PAWN) {
-                moveadder(moves, original, newposition, promote);
+                moveAdder(moves, original, newposition, promote);
             }
             return;
         }
         
-        moveadder(moves, original, newposition, promote);
+        moveAdder(moves, original, newposition, promote);
         if (once) {
             return;
         }
@@ -283,17 +283,17 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (type) {
             case BISHOP:
-                return Bishopmoves(board, myPosition);
+                return bishopMoves(board, myPosition);
             case KING:
-                return Kingmoves(board, myPosition);
+                return kingMoves(board, myPosition);
             case KNIGHT:
-                return Knightmoves(board, myPosition);
+                return knightMoves(board, myPosition);
             case PAWN:
-                return Pawnmoves(board, myPosition);
+                return pawnMoves(board, myPosition);
             case QUEEN:
-                return Queenmoves(board, myPosition);
+                return queenMoves(board, myPosition);
             case ROOK:
-                return Rookmoves(board, myPosition);
+                return rookMoves(board, myPosition);
             default:
                 throw new RuntimeException("Incorrect");
         }
