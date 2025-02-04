@@ -24,22 +24,23 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        } if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        } if (getClass() != obj.getClass()) {
             return false;
+        }
         ChessBoard other = (ChessBoard) obj;
-        if (!Arrays.deepEquals(squares, other.squares))
+        if (!Arrays.deepEquals(squares, other.squares)) {
             return false;
+        }
         return true;
     }
 
     // copilot generated
     public ChessBoard copy() {
         ChessBoard newBoard = new ChessBoard();
-        // Assuming you have a method to get all pieces and their positions
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPiece piece = this.getPiece(new ChessPosition(i, j));

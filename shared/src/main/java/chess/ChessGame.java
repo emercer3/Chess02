@@ -44,7 +44,6 @@ public class ChessGame {
     private boolean canKingEscape(ChessPosition position, Collection<ChessMove> moves, TeamColor teamcolor) {
         ChessBoard boardcopy = board.copy();
         for (ChessMove move : moves) {
-            // try {
             ChessMove originalmove = new ChessMove(move.getEndPosition(), move.getStartPosition(),
                     move.getPromotionPiece());
             ChessPiece piece1 = board.getPiece(move.getStartPosition());
@@ -59,9 +58,6 @@ public class ChessGame {
 
             makeTestMove(originalmove, boardcopy);
             board.addPiece(move.getEndPosition(), piece2);
-            // } catch (InvalidMoveException e) {
-            // continue;
-            // }
         }
         return false;
     }
