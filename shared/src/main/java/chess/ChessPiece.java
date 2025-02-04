@@ -15,8 +15,6 @@ public class ChessPiece {
     private final ChessPiece.PieceType type;
     private final ChessGame.TeamColor pieceColor;
 
-    
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -91,15 +89,18 @@ public class ChessPiece {
         return moves;
     }
 
-    public void bishop(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, boolean once, boolean promote) {
-        ChessPosition newposition = new ChessPosition(position.getRow()+y, position.getColumn()+x);
+    public void bishop(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves,
+            int x, int y, boolean once, boolean promote) {
+        ChessPosition newposition = new ChessPosition(position.getRow() + y, position.getColumn() + x);
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
         } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
             moveAdder(moves, original, newposition, promote);
             return;
         }
@@ -141,24 +142,27 @@ public class ChessPiece {
         return moves;
     }
 
-    public void knight(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, int count) {
-        ChessPosition newposition = new ChessPosition(position.getRow()+y, position.getColumn()+x);
+    public void knight(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves,
+            int x, int y, int count) {
+        ChessPosition newposition = new ChessPosition(position.getRow() + y, position.getColumn() + x);
         if (count == 2) {
             return;
-        } 
-        knight(board, original, original, moves, -1*x, -1*y, count+1);
+        }
+        knight(board, original, original, moves, -1 * x, -1 * y, count + 1);
 
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
         } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
             moveAdder(moves, original, newposition, false);
             return;
         }
- 
+
         moveAdder(moves, original, newposition, false);
     }
 
@@ -172,10 +176,10 @@ public class ChessPiece {
                 bishop(board, original, position, moves, 1, 1, true, true);
                 bishop(board, original, position, moves, -1, 1, true, true);
                 return moves;
-            } 
+            }
             if (position.getRow() == 2) {
                 pawnFirstMove(board, position, moves, 1);
-            } 
+            }
             rook(board, original, position, moves, 0, 1, true, false);
             bishop(board, original, position, moves, 1, 1, true, false);
             bishop(board, original, position, moves, -1, 1, true, false);
@@ -185,10 +189,10 @@ public class ChessPiece {
                 bishop(board, original, position, moves, 1, -1, true, true);
                 bishop(board, original, position, moves, -1, -1, true, true);
                 return moves;
-            } 
+            }
             if (position.getRow() == 7) {
                 pawnFirstMove(board, position, moves, -1);
-            } 
+            }
             rook(board, original, position, moves, 0, -1, true, false);
             bishop(board, original, position, moves, 1, -1, true, false);
             bishop(board, original, position, moves, -1, -1, true, false);
@@ -198,9 +202,9 @@ public class ChessPiece {
     }
 
     public void pawnFirstMove(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int direction) {
-        ChessPosition frist = new ChessPosition(position.getRow()+(1*direction), position.getColumn());
-        ChessPosition second = new ChessPosition(position.getRow()+(2*direction), position.getColumn());
-        
+        ChessPosition frist = new ChessPosition(position.getRow() + (1 * direction), position.getColumn());
+        ChessPosition second = new ChessPosition(position.getRow() + (2 * direction), position.getColumn());
+
         if (board.getPiece(frist) == null && board.getPiece(second) == null) {
             moveAdder(moves, position, second, false);
         }
@@ -251,21 +255,24 @@ public class ChessPiece {
         return moves;
     }
 
-    public void rook(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves, int x, int y, boolean once, boolean promote) {
-        ChessPosition newposition = new ChessPosition(position.getRow()+y, position.getColumn()+x);
+    public void rook(ChessBoard board, ChessPosition original, ChessPosition position, Collection<ChessMove> moves,
+            int x, int y, boolean once, boolean promote) {
+        ChessPosition newposition = new ChessPosition(position.getRow() + y, position.getColumn() + x);
         if (newposition.getColumn() > 8 || newposition.getColumn() < 1) {
             return;
         } else if (newposition.getRow() > 8 || newposition.getRow() < 1) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() == board.getPiece(newposition).getTeamColor()) {
             return;
-        } else if (board.getPiece(newposition) != null && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
+        } else if (board.getPiece(newposition) != null
+                && board.getPiece(original).getTeamColor() != board.getPiece(newposition).getTeamColor()) {
             if (board.getPiece(original).getPieceType() != PieceType.PAWN) {
                 moveAdder(moves, original, newposition, promote);
             }
             return;
         }
-        
+
         moveAdder(moves, original, newposition, promote);
         if (once) {
             return;
