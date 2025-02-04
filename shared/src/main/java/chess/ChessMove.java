@@ -26,14 +26,16 @@ public class ChessMove {
         }
         ChessMove other = (ChessMove) obj;
         if (startPosition == null) {
-            if (other.startPosition != null)
+            if (other.startPosition != null) {
                 return false;
+            }
         } else if (!startPosition.equals(other.startPosition)) {
             return false;
         }
         if (endPosition == null) {
-            if (other.endPosition != null)
+            if (other.endPosition != null) {
                 return false;
+            }
         } else if (!endPosition.equals(other.endPosition)) {
             return false;
         }

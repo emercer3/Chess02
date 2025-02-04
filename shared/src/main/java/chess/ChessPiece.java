@@ -26,17 +26,19 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        } if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        } if (getClass() != obj.getClass()) {
             return false;
+        }
         ChessPiece other = (ChessPiece) obj;
-        if (type != other.type)
+        if (type != other.type) {
             return false;
-        if (pieceColor != other.pieceColor)
+        } if (pieceColor != other.pieceColor) {
             return false;
+        }
         return true;
     }
 
