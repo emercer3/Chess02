@@ -10,7 +10,7 @@ public class UserDataMemoryAccess implements dataaccess.UserDataAccess {
   @Override
   public void createUser(UserData u) throws DataAccessException {
     if (users.containsKey(u.username())) {
-      throw new DataAccessException("User is already exsits");
+      throw new DataAccessException("Error: already taken");
     }
 
     users.put(u.username(), u);
@@ -26,12 +26,17 @@ public class UserDataMemoryAccess implements dataaccess.UserDataAccess {
   }
 
   @Override
-  public void clearUserData(String username) throws DataAccessException {
+  public void deleteUserData(String username) throws DataAccessException {
     if (users.containsKey(username) == false) {
       throw new DataAccessException("user does not exsit");
     }
 
     users.remove(username);
+  }
+
+  @Override
+  public void clearUserData() throws DataAccessException {
+    users.clear();
   }
   
 }

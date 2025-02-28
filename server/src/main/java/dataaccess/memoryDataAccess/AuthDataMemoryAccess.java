@@ -8,25 +8,40 @@ import java.util.UUID;
 import dataaccess.DataAccessException;
 
 public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
-  final private HashMap<String, AuthData> autherizes = new HashMap<>();
+  final private HashMap<String, String> autherizes = new HashMap<>();
 
-  @Override
-  public String createAuth(AuthData authData) throws DataAccessException {
-    String autherization = new authData.generateToken();
-
-    autherizes.put(autherization, authData);
-
+  public static String generateToken() {
+    return UUID.randomUUID().toString();
   }
 
   @Override
-  public AuthData geAuthData(String authToken) throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'geAuthData'");
+  public AuthData createAuth(String userName) throws DataAccessException {
+    String authToken = generateToken();
+
+    autherizes.put(authToken, userName); 
+    return new AuthData(authToken, userName);
+  }
+
+  @Override
+  public String geAuthData(String authToken) throws DataAccessException {
+    if ( autherizes.containsKey(authToken) == false) {
+      throw new DataAccessException("no autherization found");
+    }
+
+    return autherizes.get(authToken);
+  }
+
+  @Override
+  public void deleteAuth(String authToken) throws DataAccessException {
+    if (autherizes.containsKey(authToken) == false) {
+      throw new DataAccessException("No user found, please create a new user");
+    }
+
+    autherizes.remove(authToken);
   }
 
   @Override
   public void clearAuthData() throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'clearAuthData'");
+    autherizes.clear();
   }
 }
