@@ -8,24 +8,31 @@ import model.UserData;
 import model.AuthData;
 import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
 import dataaccess.memoryDataAccess.UserDataMemoryAccess;
-import Handler.UserHandler;
+import dataaccess.memoryDataAccess.GameDataMemoryAccess;
 import Service.UserService;
+import Service.GameService;
+import Service.AuthService;
 import dataaccess.DataAccessException;
 
 public class Server {
     private final UserService userService;
+    private final GameService gameService;
+    private final AuthService authService;
     private final UserDataMemoryAccess userData;
     private final AuthDataMemoryAccess authData;
+    private final GameDataMemoryAccess gameData;
 
     public Server() {
         this.userData = new UserDataMemoryAccess();
         this.authData = new AuthDataMemoryAccess();
+        this.gameData = new GameDataMemoryAccess();
         this.userService = new UserService(userData, authData);
+        this.gameService = new GameService(gameData, authData);
+        this.authService = new AuthService(authData);
     }
     
     // public Server(UserService userService) {
     //     this.userService = userService;
-    //     userHandler = new UserHandler();
     // }
 
     public int run(int desiredPort) {
@@ -34,6 +41,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", this::DeleteHandler);
         Spark.post("/user", this::RegisterHandler);
     
 
@@ -47,6 +55,20 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private Object DeleteHandler(Request req, Response res) throws DataAccessException {
+        try {
+            userService.clearUserData();
+            gameService.clearGameData();
+            authService.clearAuthData();
+        } catch (DataAccessException e) {
+            res.status(500);
+            return new Gson().toJson("Error: " + e.getMessage());
+        }
+
+        res.status(200);
+        return new Gson().toJson("");
     }
 
     private Object RegisterHandler(Request req, Response res) throws DataAccessException {

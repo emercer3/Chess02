@@ -34,7 +34,7 @@ public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
   @Override
   public void deleteAuth(String authToken) throws DataAccessException {
     if (autherizes.containsKey(authToken) == false) {
-      throw new DataAccessException("No user found, please create a new user");
+      throw new DataAccessException("No user found to delete");
     }
 
     autherizes.remove(authToken);

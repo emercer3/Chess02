@@ -16,6 +16,12 @@ public class UserService {
     this.authDataAccess = authDataAccess;
   }
 
+  public void clearUserData() throws DataAccessException {
+    try {
+      userDataAccess.clearUserData();
+    } catch (DataAccessException e) {}
+  }
+
   public AuthData register(UserData userData) throws DataAccessException {
     if (userData.username() == null || userData.password() == null || userData.email() == null) {
       throw new DataAccessException("Error: bad reqeust");

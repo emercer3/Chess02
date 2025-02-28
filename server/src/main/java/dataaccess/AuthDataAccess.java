@@ -3,8 +3,6 @@ package dataaccess;
 import dataaccess.DataAccessException;
 import model.AuthData;
 
-import java.util.UUID;
-
 public interface AuthDataAccess {
   AuthData createAuth(String userName) throws DataAccessException;
 
