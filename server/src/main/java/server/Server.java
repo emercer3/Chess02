@@ -144,12 +144,7 @@ public class Server {
         try {
             userAuth = userService.login(userData.username(), userData.password());
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: unauthorized") {
-                res.status(401);
-            } else {
-                res.status(500);
-            }
-            return new Gson().toJson(new MyError(e.getMessage()));
+           return getErrorMessage(e, res);
         }
 
         res.status(200);
