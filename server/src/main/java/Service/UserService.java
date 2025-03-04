@@ -55,7 +55,7 @@ public class UserService {
 
   public void Logout(String authToken) throws DataAccessException {
     try {
-      AuthData authData = authDataAccess.geAuthData(authToken);
+      AuthData authData = authDataAccess.getAuthData(authToken);
       userDataAccess.deleteUserData(authData.username());
     } catch (DataAccessException e) {
       throw new DataAccessException("Error: unauthorized");

@@ -23,7 +23,7 @@ public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
   }
 
   @Override
-  public AuthData geAuthData(String authToken) throws DataAccessException {
+  public AuthData getAuthData(String authToken) throws DataAccessException {
     if (autherizes.containsKey(authToken) == false) {
       throw new DataAccessException("Error: unauthorized");
     }

@@ -42,7 +42,7 @@ public class UserServiceTest {
 
     // then
     assertEquals(userDataAccess.getUser("username"), userData);
-    assertEquals(authData, authDataAccess.geAuthData(authData.authToken()));
+    assertEquals(authData, authDataAccess.getAuthData(authData.authToken()));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class UserServiceTest {
 
     // then
     assertEquals(logAuthData.username(), "username");
-    assertEquals(logAuthData, authDataAccess.geAuthData(logAuthData.authToken()));
+    assertEquals(logAuthData, authDataAccess.getAuthData(logAuthData.authToken()));
     assertNotEquals(regAuthData, logAuthData);
   }
 
@@ -101,7 +101,7 @@ public class UserServiceTest {
 
     // then
     try {
-      authDataAccess.geAuthData(loginAuthData.authToken());
+      authDataAccess.getAuthData(loginAuthData.authToken());
     } catch (DataAccessException e) {
       assertEquals("no autherization found", e.getMessage());
     }
@@ -119,7 +119,7 @@ public class UserServiceTest {
 
     // then
     try {
-      authDataAccess.geAuthData(regAuthData.authToken());
+      authDataAccess.getAuthData(regAuthData.authToken());
     } catch (DataAccessException e) {
       assertEquals("no autherization found", e.getMessage());
     }

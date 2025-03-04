@@ -43,6 +43,33 @@ public class Server {
         }
     }
 
+    class GameId {
+        int gameID;
+
+        public GameId(int gameID) {
+            this.gameID = gameID;
+        }
+    }
+
+    class JoinRequest {
+        String playerColor;
+        int gameID;
+
+        public JoinRequest(String playerColor, int gameID) {
+            this.playerColor = playerColor;
+            this.gameID = gameID;
+        }
+    }
+
+    class ListGames {
+        Collection<GameSummaryData> games;
+
+        public ListGames(Collection<GameSummaryData> games) {
+            this.games = games;
+        }
+    }
+
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
@@ -155,7 +182,7 @@ public class Server {
          }
 
          res.status(200);
-         return new Gson().toJson(games);
+         return new Gson().toJson(new ListGames(games));
      }
 
      private Object CreateGameHandler(Request req, Response res) throws DataAccessException {
@@ -176,16 +203,15 @@ public class Server {
             return new Gson().toJson(new MyError(e.getMessage()));
         }
         res.status(200);
-        return new Gson().toJson(gameId);
+        return new Gson().toJson(new GameId(gameId));
      }
 
      private Object JoinGameHandler(Request req, Response res) throws DataAccessException {
-        String playerColor = req.queryParams("playerColor");
-        String gameId = req.queryParams("gameID");
+        JoinRequest gameinfo = new Gson().fromJson(req.body(), JoinRequest.class);
         String authToken = req.headers("authorization");
 
         try {
-            gameService.joinGame(authToken, playerColor, Integer.parseInt(gameId));
+            gameService.joinGame(authToken, gameinfo.playerColor, gameinfo.gameID);
         } catch (DataAccessException e) {
             if (e.getMessage() == "Error: bad request") {
                 res.status(400);
