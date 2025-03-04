@@ -17,16 +17,16 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
-  static final UserDataMemoryAccess userDataAccess = new UserDataMemoryAccess();
-  static final AuthDataMemoryAccess authDataAccess = new AuthDataMemoryAccess();
-  static final GameDataMemoryAccess gameDataAccess = new GameDataMemoryAccess();
-  static final UserService userService = new UserService(userDataAccess, authDataAccess);
-  static final AuthService authService = new AuthService(authDataAccess);
-  static final GameService gameService = new GameService(gameDataAccess, authDataAccess);
+  static final UserDataMemoryAccess UserDataAccess = new UserDataMemoryAccess();
+  static final AuthDataMemoryAccess AuthDataAccess = new AuthDataMemoryAccess();
+  static final GameDataMemoryAccess GameDataAccess = new GameDataMemoryAccess();
+  static final UserService UserService = new UserService(UserDataAccess, AuthDataAccess);
+  static final AuthService AuthService = new AuthService(AuthDataAccess);
+  static final GameService GameService = new GameService(GameDataAccess, AuthDataAccess);
 
   @BeforeEach
   void clear() throws DataAccessException {
-    userService.clearUserData();
+    UserService.clearUserData();
   }
 
   @Test
@@ -35,11 +35,11 @@ public class UserServiceTest {
     new UserData("username", "password", "email");
 
     // when
-    userService.clearUserData();
+    UserService.clearUserData();
 
     // then
     try {
-      userDataAccess.getUser("username");
+      UserDataAccess.getUser("username");
     } catch (DataAccessException e) {
       assertEquals(e.getMessage(), "Error: No user found, please create a new user");
     }
@@ -49,14 +49,14 @@ public class UserServiceTest {
   void clearBad() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
+    AuthData authData = UserService.register(userData);
     // when
-    userService.clearUserData();
-    authService.clearAuthData();
+    UserService.clearUserData();
+    AuthService.clearAuthData();
 
     // then
     try {
-      authDataAccess.getAuthData(authData.authToken());
+      AuthDataAccess.getAuthData(authData.authToken());
     } catch (DataAccessException e) {
       assertEquals(e.getMessage(), "Error: unauthorized");
     }
@@ -68,11 +68,11 @@ public class UserServiceTest {
     UserData userData = new UserData("username", "password", "email");
 
     // when
-    AuthData authData = userService.register(userData);
+    AuthData authData = UserService.register(userData);
 
     // then
-    assertEquals(userDataAccess.getUser("username"), userData);
-    assertEquals(authData, authDataAccess.getAuthData(authData.authToken()));
+    assertEquals(UserDataAccess.getUser("username"), userData);
+    assertEquals(authData, AuthDataAccess.getAuthData(authData.authToken()));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class UserServiceTest {
 
     // when
     try {
-      userService.register(userData);
+      UserService.register(userData);
     } catch (DataAccessException e) {
       // then
       assertEquals(e.getMessage(), "Error: bad reqeust");
@@ -93,14 +93,14 @@ public class UserServiceTest {
   void loginGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData regAuthData = userService.register(userData);
+    AuthData regAuthData = UserService.register(userData);
 
     // when
-    AuthData logAuthData = userService.login("username", "password");
+    AuthData logAuthData = UserService.login("username", "password");
 
     // then
     assertEquals(logAuthData.username(), "username");
-    assertEquals(logAuthData, authDataAccess.getAuthData(logAuthData.authToken()));
+    assertEquals(logAuthData, AuthDataAccess.getAuthData(logAuthData.authToken()));
     assertNotEquals(regAuthData, logAuthData);
   }
 
@@ -108,11 +108,11 @@ public class UserServiceTest {
   void loginBad() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    userService.register(userData);
+    UserService.register(userData);
 
     // when
     try {
-      userService.login("userName", "password");
+      UserService.login("userName", "password");
     } catch (DataAccessException e) {
       // then
       assertEquals(e.getMessage(), "Error: unauthorized");
@@ -123,15 +123,15 @@ public class UserServiceTest {
   void logoutGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    userService.register(userData);
-    AuthData loginAuthData = userService.login("username", "password");
+    UserService.register(userData);
+    AuthData loginAuthData = UserService.login("username", "password");
 
     // when
-    userService.logout(loginAuthData.authToken());
+    UserService.logout(loginAuthData.authToken());
 
     // then
     try {
-      authDataAccess.getAuthData(loginAuthData.authToken());
+      AuthDataAccess.getAuthData(loginAuthData.authToken());
     } catch (DataAccessException e) {
       assertEquals("no autherization found", e.getMessage());
     }
@@ -142,14 +142,14 @@ public class UserServiceTest {
   void logoutBad() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData regAuthData = userService.register(userData);
+    AuthData regAuthData = UserService.register(userData);
 
     // when
-    userService.logout(regAuthData.authToken());
+    UserService.logout(regAuthData.authToken());
 
     // then
     try {
-      authDataAccess.getAuthData(regAuthData.authToken());
+      AuthDataAccess.getAuthData(regAuthData.authToken());
     } catch (DataAccessException e) {
       assertEquals("no autherization found", e.getMessage());
     }
@@ -159,10 +159,10 @@ public class UserServiceTest {
   void createGameGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
+    AuthData authData = UserService.register(userData);
 
     // when
-    int gameId = gameService.createGame(authData.authToken(), "gameName");
+    int gameId = GameService.createGame(authData.authToken(), "gameName");
 
     // then
     assertEquals(1, gameId);
@@ -172,11 +172,11 @@ public class UserServiceTest {
   void creatGameBad() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    userService.register(userData);
+    UserService.register(userData);
 
     // when and then
     try {
-      gameService.createGame("123", "gameName");
+      GameService.createGame("123", "gameName");
     } catch (DataAccessException e) {
       assertEquals("Error: unauthorized", e.getMessage());
     }
@@ -186,11 +186,11 @@ public class UserServiceTest {
   void listGameGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
-    gameService.createGame(authData.authToken(), "gameName");
+    AuthData authData = UserService.register(userData);
+    GameService.createGame(authData.authToken(), "gameName");
 
     // when
-    Collection<GameSummaryData> games = gameService.listGames(authData.authToken());
+    Collection<GameSummaryData> games = GameService.listGames(authData.authToken());
 
     // then
     assertEquals(games.size(), 2);
@@ -200,12 +200,12 @@ public class UserServiceTest {
   void listGameBad() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
-    gameService.createGame(authData.authToken(), "gameName");
+    AuthData authData = UserService.register(userData);
+    GameService.createGame(authData.authToken(), "gameName");
 
     // when and then
     try {
-      gameService.listGames("1234");
+      GameService.listGames("1234");
     } catch (DataAccessException e) {
       assertEquals("Error: unauthorized", e.getMessage());
     }
@@ -215,12 +215,12 @@ public class UserServiceTest {
   void joinGameGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
-    int gameId = gameService.createGame(authData.authToken(), "gameName");
+    AuthData authData = UserService.register(userData);
+    int gameId = GameService.createGame(authData.authToken(), "gameName");
 
     // when
-    gameService.joinGame(authData.authToken(), "WHITE", gameId);
-    GameData gameData = gameService.getGame(authData.authToken(), gameId);
+    GameService.joinGame(authData.authToken(), "WHITE", gameId);
+    GameData gameData = GameService.getGame(authData.authToken(), gameId);
 
     // then
     assertEquals(gameData.whiteUsername(), userData.username());
@@ -229,16 +229,16 @@ public class UserServiceTest {
   @Test
   void joinGameBad() throws DataAccessException {
     UserData userData = new UserData("username", "password", "email");
-    AuthData authData = userService.register(userData);
-    int gameId = gameService.createGame(authData.authToken(), "gameName");
-    gameService.joinGame(authData.authToken(), "WHITE", gameId);
-    gameService.getGame(authData.authToken(), gameId);
+    AuthData authData = UserService.register(userData);
+    int gameId = GameService.createGame(authData.authToken(), "gameName");
+    GameService.joinGame(authData.authToken(), "WHITE", gameId);
+    GameService.getGame(authData.authToken(), gameId);
     UserData user1Data = new UserData("username1", "password", "email");
-    AuthData auth1Data = userService.register(user1Data);
+    AuthData auth1Data = UserService.register(user1Data);
 
     // when and then
     try {
-      gameService.joinGame(auth1Data.authToken(), "WHITE", gameId);
+      GameService.joinGame(auth1Data.authToken(), "WHITE", gameId);
     } catch (DataAccessException e) {
       assertEquals("Error: already taken", e.getMessage());
     }
