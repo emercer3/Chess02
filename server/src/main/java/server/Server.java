@@ -35,9 +35,13 @@ public class Server {
         this.authService = new AuthService(authData);
     }
     
-    // public Server(UserService userService) {
-    //     this.userService = userService;
-    // }
+    class MyError {
+        String message;
+
+        public MyError(String message) {
+            this.message = message; 
+        }
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -80,13 +84,14 @@ public class Server {
         return "{}";
     }
 
+    
     private Object RegisterHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         AuthData userAuth = null;
         try {
             userAuth = userService.register(user);
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: bad request") {
+            if (e.getMessage().equals("Error: bad request")) {
                 res.status(400);
             } else if (e.getMessage() == "Error: already taken") {
                 res.status(403);
@@ -94,7 +99,7 @@ public class Server {
                 res.status(500);
             }
 
-            return new Gson().toJson(e.getMessage());
+            return new Gson().toJson(new MyError(e.getMessage()));
         }
 
         res.status(200);
@@ -112,7 +117,7 @@ public class Server {
             } else {
                 res.status(500);
             }
-            return new Gson().toJson(e.getMessage());
+            return new Gson().toJson(new MyError(e.getMessage()));
         }
 
         res.status(200);
@@ -130,7 +135,7 @@ public class Server {
             } else {
                 res.status(500);
             }
-            return new Gson().toJson(e.getMessage());
+            return new Gson().toJson(new MyError(e.getMessage()));
         }
         return "{}";
     }
@@ -146,7 +151,7 @@ public class Server {
              } else {
                  res.status(500);
              }
-             return new Gson().toJson(e.getMessage());
+             return new Gson().toJson(new MyError(e.getMessage()));
          }
 
          res.status(200);
@@ -168,7 +173,7 @@ public class Server {
             } else {
                 res.status(500);
             }
-            return new Gson().toJson(e.getMessage());
+            return new Gson().toJson(new MyError(e.getMessage()));
         }
         res.status(200);
         return new Gson().toJson(gameId);
@@ -191,7 +196,7 @@ public class Server {
             } else {
                 res.status(500);
             }
-            return new Gson().toJson(e.getMessage());
+            return new Gson().toJson(new MyError(e.getMessage()));
         }
         res.status(200);
         return "{}";

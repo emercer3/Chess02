@@ -24,7 +24,7 @@ public class UserService {
 
   public AuthData register(UserData userData) throws DataAccessException {
     if (userData.username() == null || userData.password() == null || userData.email() == null) {
-      throw new DataAccessException("Error: bad reqeust");
+      throw new DataAccessException("Error: bad request");
     }
 
     try {
@@ -39,16 +39,17 @@ public class UserService {
     if (userName == null || password == null) {
       throw new DataAccessException("Error: bad request");
     }
-
+    UserData userData;
     try {
-      UserData userData = userDataAccess.getUser(userName);
-      if (!userData.password().equals(password)) {
-        throw new DataAccessException("Error: unauthorized");
-      } else {
-        return authDataAccess.createAuth(userName);
-      }
+      userData = userDataAccess.getUser(userName);
     } catch (DataAccessException e) {
-      throw new DataAccessException("Error: no user under that userName");
+      throw new DataAccessException("Error: unauthorized");
+    }
+
+    if (!userData.password().equals(password)) {
+      throw new DataAccessException("Error: unauthorized");
+    } else {
+      return authDataAccess.createAuth(userName);
     }
   }
 
