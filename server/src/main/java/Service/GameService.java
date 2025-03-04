@@ -33,4 +33,14 @@ public class GameService {
       throw new DataAccessException(e.getMessage());
     }
   }
+
+  public int createGame(String authToken, String gameName) throws DataAccessException {
+    try {
+      AuthData authData = authDataAccess.geAuthData(authToken);
+      return gameDataAccess.createGame(gameName);
+    } catch (DataAccessException e) {
+      throw new DataAccessException(e.getMessage());
+    }
+  }
+
 }

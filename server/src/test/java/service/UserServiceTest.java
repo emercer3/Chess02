@@ -3,11 +3,14 @@ package service;
 import dataaccess.UserDataAccess;
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.GameDataAccess;
 import dataaccess.memoryDataAccess.UserDataMemoryAccess;
 import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
+import dataaccess.memoryDataAccess.GameDataMemoryAccess;
 import model.UserData;
 import model.AuthData;
 import Service.AuthService;
+import Service.GameService;
 import Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
   static final UserDataMemoryAccess userDataAccess = new UserDataMemoryAccess();
   static final AuthDataMemoryAccess authDataAccess = new AuthDataMemoryAccess();
+  static final GameDataMemoryAccess gameDataAccess = new GameDataMemoryAccess();
   static final UserService userService = new UserService(userDataAccess, authDataAccess);
   static final AuthService authService = new AuthService(authDataAccess);
+  static final GameService gameService = new GameService(gameDataAccess, authDataAccess);
 
   @BeforeEach
   void clear() throws DataAccessException {
@@ -115,6 +120,33 @@ public class UserServiceTest {
       authDataAccess.geAuthData(regAuthData.authToken());
     } catch (DataAccessException e) {
       assertEquals("no autherization found", e.getMessage());
+    }
+  }
+
+  @Test
+  void createGameGood() throws DataAccessException {
+    // given
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+
+    // when
+    int gameId = gameService.createGame(authData.authToken(), "gameName");
+
+    // then
+    assertEquals(1, gameId);
+  }
+
+  @Test
+  void creatGameBad() throws DataAccessException {
+    // given
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+
+    // when and then
+    try {
+      int gameId = gameService.createGame("123", "gameName");
+    } catch (DataAccessException e) {
+      assertEquals("Error: unauthorized", e.getMessage());
     }
   }
 

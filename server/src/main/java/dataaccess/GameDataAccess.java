@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface GameDataAccess {
   Collection<GameData> listGames() throws DataAccessException;
 
-  String createGame(String authToken) throws DataAccessException;
+  int createGame(String gameName) throws DataAccessException;
   
   GameData getGame(String gameName) throws DataAccessException;
 

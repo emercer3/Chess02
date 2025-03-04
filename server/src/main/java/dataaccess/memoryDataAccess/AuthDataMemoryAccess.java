@@ -25,7 +25,7 @@ public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
   @Override
   public AuthData geAuthData(String authToken) throws DataAccessException {
     if (autherizes.containsKey(authToken) == false) {
-      throw new DataAccessException("no autherization found");
+      throw new DataAccessException("Error: unauthorized");
     }
 
     return autherizes.get(authToken);

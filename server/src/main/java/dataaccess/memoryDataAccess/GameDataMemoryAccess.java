@@ -11,7 +11,8 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 
 public class GameDataMemoryAccess implements GameDataAccess {
-  final private HashMap<String, GameData> games = new HashMap<>();
+  final private HashMap<Integer, GameData> games = new HashMap<>();
+  private int gameID = 1;
 
   @Override
   public Collection<GameData> listGames() throws DataAccessException {
@@ -20,9 +21,11 @@ public class GameDataMemoryAccess implements GameDataAccess {
   }
 
   @Override
-  public String createGame(String authToken) throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'createGame'");
+  public int createGame(String gameName) throws DataAccessException {
+    GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
+    games.put(gameID, gameData);
+    gameID++;
+    return gameData.gameID();
   }
 
   @Override
