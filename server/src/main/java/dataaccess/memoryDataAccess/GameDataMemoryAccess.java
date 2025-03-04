@@ -2,9 +2,12 @@ package dataaccess.memoryDataAccess;
 
 import model.GameData;
 import model.UserData;
+import model.GameSummaryData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
@@ -15,8 +18,12 @@ public class GameDataMemoryAccess implements GameDataAccess {
   private int gameID = 1;
 
   @Override
-  public Collection<GameData> listGames() throws DataAccessException {
-    Collection<GameData> gameList = games.values();
+  public Collection<GameSummaryData> listGames() throws DataAccessException {
+    Collection<GameSummaryData> gameList = new ArrayList<>();
+    for (GameData game : games.values()) {
+      gameList.add(new GameSummaryData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+    }
+    // Collection<GameData> gameList = games.values();
     return gameList;
   }
 

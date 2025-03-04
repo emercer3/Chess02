@@ -9,6 +9,7 @@ import spark.*;
 import model.UserData;
 import model.AuthData;
 import model.GameData;
+import model.GameSummaryData;
 import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
 import dataaccess.memoryDataAccess.UserDataMemoryAccess;
 import dataaccess.memoryDataAccess.GameDataMemoryAccess;
@@ -136,7 +137,7 @@ public class Server {
 
     private Object ListGamehandler(Request req, Response res) throws DataAccessException {
         String authToken = req.headers("authorization");
-        Collection<GameData> games = new ArrayList<>();
+        Collection<GameSummaryData> games = new ArrayList<>();
         try {
             games = gameService.listGames(authToken);
          } catch (DataAccessException e) {

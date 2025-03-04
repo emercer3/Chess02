@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import model.AuthData;
 import model.GameData;
+import model.GameSummaryData;
 import chess.ChessGame;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ public class GameService {
     } catch (DataAccessException e) {}
   }
 
-  public Collection<GameData> listGames(String authToken) throws DataAccessException {
+  public Collection<GameSummaryData> listGames(String authToken) throws DataAccessException {
     
     try {
       AuthData authData = authDataAccess.geAuthData(authToken);  // do i need to get authData
