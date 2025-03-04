@@ -14,9 +14,9 @@ public class GameDataMemoryAccess implements GameDataAccess {
   final private HashMap<String, GameData> games = new HashMap<>();
 
   @Override
-  public Collection<ChessGame> listGames(String authToken) throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'listGames'");
+  public Collection<GameData> listGames() throws DataAccessException {
+    Collection<GameData> gameList = games.values();
+    return gameList;
   }
 
   @Override

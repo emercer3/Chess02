@@ -24,11 +24,11 @@ public class GameService {
     } catch (DataAccessException e) {}
   }
 
-  public Collection<ChessGame> listGames(String authToken) throws DataAccessException {
+  public Collection<GameData> listGames(String authToken) throws DataAccessException {
     
     try {
       AuthData authData = authDataAccess.geAuthData(authToken);  // do i need to get authData
-      return gameDataAccess.listGames(authToken);
+      return gameDataAccess.listGames();
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
     }

@@ -7,7 +7,7 @@ import model.GameData;
 import java.util.Collection;
 
 public interface GameDataAccess {
-  Collection<ChessGame> listGames(String authToken) throws DataAccessException;
+  Collection<GameData> listGames() throws DataAccessException;
 
   String createGame(String authToken) throws DataAccessException;
   
