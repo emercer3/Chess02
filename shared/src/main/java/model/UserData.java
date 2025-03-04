@@ -1,7 +1,5 @@
 package model;
 
-import java.util.UUID;
-
 import com.google.gson.*;
 
 public record UserData(String username, String password, String email) {

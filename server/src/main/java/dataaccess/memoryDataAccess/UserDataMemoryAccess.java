@@ -38,5 +38,5 @@ public class UserDataMemoryAccess implements dataaccess.UserDataAccess {
   public void clearUserData() throws DataAccessException {
     users.clear();
   }
-  
+
 }

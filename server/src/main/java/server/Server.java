@@ -8,7 +8,6 @@ import spark.*;
 
 import model.UserData;
 import model.AuthData;
-import model.GameData;
 import model.GameSummaryData;
 import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
 import dataaccess.memoryDataAccess.UserDataMemoryAccess;
@@ -34,12 +33,12 @@ public class Server {
         this.gameService = new GameService(gameData, authData);
         this.authService = new AuthService(authData);
     }
-    
+
     class MyError {
         String message;
 
         public MyError(String message) {
-            this.message = message; 
+            this.message = message;
         }
     }
 
@@ -77,23 +76,22 @@ public class Server {
         }
     }
 
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", this::DeleteHandler);
-        Spark.post("/user", this::RegisterHandler);
-        Spark.post("/session", this::LoginHandler);
-        Spark.delete("/session", this::LogoutHandler);
-        Spark.get("/game", this::ListGamehandler);
-        Spark.post("/game", this::CreateGameHandler);
-        Spark.put("/game", this::JoinGameHandler);
-    
+        Spark.delete("/db", this::deleteHandler);
+        Spark.post("/user", this::registerHandler);
+        Spark.post("/session", this::loginHandler);
+        Spark.delete("/session", this::logoutHandler);
+        Spark.get("/game", this::listGamehandler);
+        Spark.post("/game", this::createGameHandler);
+        Spark.put("/game", this::joinGameHandler);
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
+        // This line initializes the server and can be removed once you have a
+        // functioning endpoint
         Spark.init();
 
         Spark.awaitInitialization();
@@ -105,7 +103,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object DeleteHandler(Request req, Response res) throws DataAccessException {
+    private Object deleteHandler(Request req, Response res) throws DataAccessException {
         try {
             userService.clearUserData();
             gameService.clearGameData();
@@ -119,8 +117,7 @@ public class Server {
         return "{}";
     }
 
-    
-    private Object RegisterHandler(Request req, Response res) throws DataAccessException {
+    private Object registerHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         AuthData userAuth = null;
         try {
@@ -141,11 +138,11 @@ public class Server {
         return new Gson().toJson(userAuth);
     }
 
-    private Object LoginHandler(Request req, Response res) throws DataAccessException {
+    private Object loginHandler(Request req, Response res) throws DataAccessException {
         var userData = new Gson().fromJson(req.body(), UserData.class);
         AuthData userAuth = null;
         try {
-            userAuth = userService.Login(userData.username(), userData.password());
+            userAuth = userService.login(userData.username(), userData.password());
         } catch (DataAccessException e) {
             if (e.getMessage() == "Error: unauthorized") {
                 res.status(401);
@@ -159,11 +156,11 @@ public class Server {
         return new Gson().toJson(userAuth);
     }
 
-    private Object LogoutHandler(Request req, Response res) throws DataAccessException {
+    private Object logoutHandler(Request req, Response res) throws DataAccessException {
         String authToken = req.headers("authorization");
 
         try {
-           userService.Logout(authToken); 
+            userService.logout(authToken);
         } catch (DataAccessException e) {
             if (e.getMessage() == "Error: unauthorized") {
                 res.status(401);
@@ -175,25 +172,25 @@ public class Server {
         return "{}";
     }
 
-    private Object ListGamehandler(Request req, Response res) throws DataAccessException {
+    private Object listGamehandler(Request req, Response res) throws DataAccessException {
         String authToken = req.headers("authorization");
         Collection<GameSummaryData> games = new ArrayList<>();
         try {
             games = gameService.listGames(authToken);
-         } catch (DataAccessException e) {
-             if (e.getMessage() == "Error: unauthorized") {
-                 res.status(401);
-             } else {
-                 res.status(500);
-             }
-             return new Gson().toJson(new MyError(e.getMessage()));
-         }
+        } catch (DataAccessException e) {
+            if (e.getMessage() == "Error: unauthorized") {
+                res.status(401);
+            } else {
+                res.status(500);
+            }
+            return new Gson().toJson(new MyError(e.getMessage()));
+        }
 
-         res.status(200);
-         return new Gson().toJson(new ListGames(games));
-     }
+        res.status(200);
+        return new Gson().toJson(new ListGames(games));
+    }
 
-     private Object CreateGameHandler(Request req, Response res) throws DataAccessException {
+    private Object createGameHandler(Request req, Response res) throws DataAccessException {
         // String gameName = req.queryParams("gameName");
         CreateGame gameName = new Gson().fromJson(req.body(), CreateGame.class);
         String authToken = req.headers("authorization");
@@ -212,9 +209,9 @@ public class Server {
         }
         res.status(200);
         return new Gson().toJson(new GameId(gameId));
-     }
+    }
 
-     private Object JoinGameHandler(Request req, Response res) throws DataAccessException {
+    private Object joinGameHandler(Request req, Response res) throws DataAccessException {
         JoinRequest gameinfo = new Gson().fromJson(req.body(), JoinRequest.class);
         String authToken = req.headers("authorization");
 
@@ -234,6 +231,6 @@ public class Server {
         }
         res.status(200);
         return "{}";
-     }
+    }
 
 }

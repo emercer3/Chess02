@@ -6,7 +6,6 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
-
 public class UserService {
   private final UserDataAccess userDataAccess;
   private final AuthDataAccess authDataAccess;
@@ -19,7 +18,8 @@ public class UserService {
   public void clearUserData() throws DataAccessException {
     try {
       userDataAccess.clearUserData();
-    } catch (DataAccessException e) {}
+    } catch (DataAccessException e) {
+    }
   }
 
   public AuthData register(UserData userData) throws DataAccessException {
@@ -29,13 +29,14 @@ public class UserService {
 
     try {
       userDataAccess.getUser(userData.username());
-    } catch (DataAccessException e) {}
-    
+    } catch (DataAccessException e) {
+    }
+
     userDataAccess.createUser(userData);
     return authDataAccess.createAuth(userData.username());
   }
 
-  public AuthData Login(String userName, String password) throws DataAccessException{
+  public AuthData login(String userName, String password) throws DataAccessException {
     if (userName == null || password == null) {
       throw new DataAccessException("Error: bad request");
     }
@@ -53,7 +54,7 @@ public class UserService {
     }
   }
 
-  public void Logout(String authToken) throws DataAccessException {
+  public void logout(String authToken) throws DataAccessException {
     try {
       AuthData authData = authDataAccess.getAuthData(authToken);
       userDataAccess.deleteUserData(authData.username());

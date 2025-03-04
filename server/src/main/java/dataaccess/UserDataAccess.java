@@ -1,10 +1,9 @@
 package dataaccess;
 
-import dataaccess.DataAccessException;
 import model.UserData;
 
 public interface UserDataAccess {
-  void createUser(UserData userData) throws DataAccessException;  //return type authdata?
+  void createUser(UserData userData) throws DataAccessException;
 
   UserData getUser(String username) throws DataAccessException;
   

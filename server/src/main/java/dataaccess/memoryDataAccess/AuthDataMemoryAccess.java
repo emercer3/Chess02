@@ -1,7 +1,6 @@
 package dataaccess.memoryDataAccess;
 
 import model.AuthData;
-import model.UserData;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,7 +17,7 @@ public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
   public AuthData createAuth(String userName) throws DataAccessException {
     String authToken = generateToken();
     AuthData authData = new AuthData(authToken, userName);
-    autherizes.put(authToken, authData); 
+    autherizes.put(authToken, authData);
     return authData;
   }
 

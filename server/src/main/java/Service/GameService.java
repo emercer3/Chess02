@@ -6,7 +6,7 @@ import dataaccess.GameDataAccess;
 import model.AuthData;
 import model.GameData;
 import model.GameSummaryData;
-import chess.ChessGame;
+
 
 import java.util.Collection;
 
@@ -22,39 +22,37 @@ public class GameService {
   public void clearGameData() throws DataAccessException {
     try {
       gameDataAccess.clearGameData();
-    } catch (DataAccessException e) {}
+    } catch (DataAccessException e) {
+    }
   }
 
   public GameData getGame(String authToken, int gameId) throws DataAccessException {
     try {
-      AuthData authData = authDataAccess.getAuthData(authToken);
+      authDataAccess.getAuthData(authToken);
       return gameDataAccess.getGame(gameId);
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
     }
   }
 
-  
   public Collection<GameSummaryData> listGames(String authToken) throws DataAccessException {
-    
+
     try {
-      AuthData authData = authDataAccess.getAuthData(authToken);  // do i need to get authData
+      authDataAccess.getAuthData(authToken);
       return gameDataAccess.listGames();
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
     }
   }
 
-
   public int createGame(String authToken, String gameName) throws DataAccessException {
     try {
-      AuthData authData = authDataAccess.getAuthData(authToken);
+      authDataAccess.getAuthData(authToken);
       return gameDataAccess.createGame(gameName);
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
     }
   }
-
 
   public void joinGame(String authToken, String playerColor, int gameId) throws DataAccessException {
     if (playerColor == null || (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
@@ -74,12 +72,14 @@ public class GameService {
     if (gameData == null) {
       throw new DataAccessException("Error: bad request");
     }
-  
+
     GameData newGameData;
     if (playerColor.equals("WHITE") && gameData.whiteUsername() == null) {
-      newGameData = new GameData(gameId, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+      newGameData = new GameData(gameId, authData.username(), gameData.blackUsername(), gameData.gameName(),
+          gameData.game());
     } else if (playerColor.equals("BLACK") && gameData.blackUsername() == null) {
-      newGameData = new GameData(gameId, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+      newGameData = new GameData(gameId, gameData.whiteUsername(), authData.username(), gameData.gameName(),
+          gameData.game());
     } else {
       throw new DataAccessException("Error: already taken");
     }

@@ -1,12 +1,10 @@
 package dataaccess.memoryDataAccess;
 
 import model.GameData;
-import model.UserData;
 import model.GameSummaryData;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
 
 import chess.ChessGame;
@@ -50,5 +48,5 @@ public class GameDataMemoryAccess implements GameDataAccess {
   public void clearGameData() throws DataAccessException {
     games.clear();
   }
-  
+
 }
