@@ -70,6 +70,10 @@ public class GameService {
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
     }
+
+    if (gameData == null) {
+      throw new DataAccessException("Error: bad request");
+    }
   
     GameData newGameData;
     if (playerColor.equals("WHITE") && gameData.whiteUsername() == null) {

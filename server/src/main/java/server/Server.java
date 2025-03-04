@@ -69,6 +69,14 @@ public class Server {
         }
     }
 
+    class CreateGame {
+        String gameName;
+
+        public CreateGame(String gameName) {
+            this.gameName = gameName;
+        }
+    }
+
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -186,12 +194,12 @@ public class Server {
      }
 
      private Object CreateGameHandler(Request req, Response res) throws DataAccessException {
-        String gameName = req.queryParams("authorization");
-        // var gameName = new Gson().fromJson(req.body(), String.class);
+        // String gameName = req.queryParams("gameName");
+        CreateGame gameName = new Gson().fromJson(req.body(), CreateGame.class);
         String authToken = req.headers("authorization");
         int gameId;
         try {
-            gameId = gameService.createGame(authToken, gameName);
+            gameId = gameService.createGame(authToken, gameName.gameName);
         } catch (DataAccessException e) {
             if (e.getMessage() == "Error: bad request") {
                 res.status(400);
