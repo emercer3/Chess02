@@ -51,7 +51,7 @@ public class Server {
         Spark.delete("/session", this::LogoutHandler);
         Spark.get("/game", this::ListGamehandler);
         Spark.post("/game", this::CreateGameHandler);
-        // Spark.post("/game", this::JoinGameHandler);
+        Spark.put("/game", this::JoinGameHandler);
     
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -174,6 +174,27 @@ public class Server {
         return new Gson().toJson(gameId);
      }
 
-    //  private Object
+     private Object JoinGameHandler(Request req, Response res) throws DataAccessException {
+        String playerColor = req.queryParams("playerColor");
+        String gameId = req.queryParams("gameID");
+        String authToken = req.headers("authorization");
+
+        try {
+            gameService.joinGame(authToken, playerColor, Integer.parseInt(gameId));
+        } catch (DataAccessException e) {
+            if (e.getMessage() == "Error: bad request") {
+                res.status(400);
+            } else if (e.getMessage() == "Error: unauthorized") {
+                res.status(401);
+            } else if (e.getMessage() == "Error: already taken") {
+                res.status(403);
+            } else {
+                res.status(500);
+            }
+            return new Gson().toJson(e.getMessage());
+        }
+        res.status(200);
+        return "{}";
+     }
 
 }

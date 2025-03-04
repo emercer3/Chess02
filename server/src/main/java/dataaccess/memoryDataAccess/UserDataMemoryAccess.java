@@ -19,7 +19,7 @@ public class UserDataMemoryAccess implements dataaccess.UserDataAccess {
   @Override
   public UserData getUser(String username) throws DataAccessException {
     if (users.containsKey(username) == false) {
-      throw new DataAccessException("No user found, please create a new user");
+      throw new DataAccessException("Error: No user found, please create a new user");
     }
 
     return users.get(username);
@@ -28,7 +28,7 @@ public class UserDataMemoryAccess implements dataaccess.UserDataAccess {
   @Override
   public void deleteUserData(String username) throws DataAccessException {
     if (users.containsKey(username) == false) {
-      throw new DataAccessException("user does not exsit");
+      throw new DataAccessException("Error: user does not exsit");
     }
 
     users.remove(username);

@@ -25,6 +25,16 @@ public class GameService {
     } catch (DataAccessException e) {}
   }
 
+  public GameData getGame(String authToken, int gameId) throws DataAccessException {
+    try {
+      AuthData authData = authDataAccess.geAuthData(authToken);
+      return gameDataAccess.getGame(gameId);
+    } catch (DataAccessException e) {
+      throw new DataAccessException(e.getMessage());
+    }
+  }
+
+  
   public Collection<GameSummaryData> listGames(String authToken) throws DataAccessException {
     
     try {
@@ -35,6 +45,7 @@ public class GameService {
     }
   }
 
+
   public int createGame(String authToken, String gameName) throws DataAccessException {
     try {
       AuthData authData = authDataAccess.geAuthData(authToken);
@@ -44,4 +55,20 @@ public class GameService {
     }
   }
 
+
+  public void joinGame(String authToken, String playerColor, int gameId) throws DataAccessException {
+    try {
+      AuthData authData = authDataAccess.geAuthData(authToken);
+      GameData gameData = gameDataAccess.getGame(gameId);
+      GameData newGameData;
+      if (playerColor.equals("WHITE")) {
+        newGameData = new GameData(gameId, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+      } else {
+        newGameData = new GameData(gameId, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+      }
+      gameDataAccess.updateGame(newGameData);
+    } catch (DataAccessException e) {
+      throw new DataAccessException(e.getMessage());
+    }
+  }
 }

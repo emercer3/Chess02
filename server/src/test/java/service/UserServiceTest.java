@@ -9,12 +9,14 @@ import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
 import dataaccess.memoryDataAccess.GameDataMemoryAccess;
 import model.UserData;
 import model.AuthData;
+import model.GameData;
+import model.GameSummaryData;
 import Service.AuthService;
 import Service.GameService;
 import Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -147,6 +149,68 @@ public class UserServiceTest {
       int gameId = gameService.createGame("123", "gameName");
     } catch (DataAccessException e) {
       assertEquals("Error: unauthorized", e.getMessage());
+    }
+  }
+
+  @Test
+  void listGameGood() throws DataAccessException {
+    // given
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+    int gameId = gameService.createGame(authData.authToken(), "gameName");
+
+    // when
+    Collection<GameSummaryData> games = gameService.listGames(authData.authToken());
+
+    // then
+    assertEquals(games.size(), 1);
+  }
+
+  @Test
+  void listGameBad() throws DataAccessException {
+    // given
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+    int gameId = gameService.createGame(authData.authToken(), "gameName");
+
+    // when and then
+    try {
+      Collection<GameSummaryData> games = gameService.listGames("1234");
+    } catch (DataAccessException e) {
+      assertEquals("Error: unauthorized", e.getMessage());
+    }
+  }
+
+  @Test
+  void joinGameGood() throws DataAccessException {
+    // given
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+    int gameId = gameService.createGame(authData.authToken(), "gameName");
+
+    // when
+    gameService.joinGame(authData.authToken(), "WHITE", gameId);
+    GameData gameData = gameService.getGame(authData.authToken(), gameId);
+
+    // then
+    assertEquals(gameData.whiteUsername(), userData.username());
+  }
+
+  @Test
+  void joinGameBad() throws DataAccessException {
+    UserData userData = new UserData("username", "password", "email");
+    AuthData authData = userService.register(userData);
+    int gameId = gameService.createGame(authData.authToken(), "gameName");
+    gameService.joinGame(authData.authToken(), "WHITE", gameId);
+    GameData gameData = gameService.getGame(authData.authToken(), gameId);
+    UserData user1Data = new UserData("username1", "password", "email");
+    AuthData auth1Data = userService.register(user1Data);
+
+    // when and then
+    try {
+      gameService.joinGame(auth1Data.authToken(), "WHITE", gameId);
+    } catch (DataAccessException e) {
+      assertEquals("Error: already taken", e.getMessage());
     }
   }
 

@@ -36,15 +36,14 @@ public class GameDataMemoryAccess implements GameDataAccess {
   }
 
   @Override
-  public GameData getGame(String gameName) throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getGame'");
+  public GameData getGame(int gameId) throws DataAccessException {
+    return games.get(gameId);
   }
 
   @Override
   public void updateGame(GameData gameData) throws DataAccessException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateGame'");
+    games.remove(gameData.gameID());
+    games.put(gameData.gameID(), gameData);
   }
 
   @Override
