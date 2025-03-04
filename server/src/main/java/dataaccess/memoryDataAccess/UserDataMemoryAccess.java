@@ -1,4 +1,4 @@
-package dataaccess.memoryDataAccess;
+package dataaccess.memorydataaccess;
 
 import model.UserData;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package dataaccess.memoryDataAccess;
+package dataaccess.memorydataaccess;
 
 import model.AuthData;
 import java.util.HashMap;

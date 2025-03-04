@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 import dataaccess.UserDataAccess;
 import dataaccess.AuthDataAccess;
@@ -58,6 +58,7 @@ public class UserService {
     try {
       AuthData authData = authDataAccess.getAuthData(authToken);
       userDataAccess.deleteUserData(authData.username());
+      authDataAccess.deleteAuth(authToken);
     } catch (DataAccessException e) {
       throw new DataAccessException("Error: unauthorized");
     }

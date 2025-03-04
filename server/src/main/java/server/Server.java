@@ -9,13 +9,13 @@ import spark.*;
 import model.UserData;
 import model.AuthData;
 import model.GameSummaryData;
-import dataaccess.memoryDataAccess.AuthDataMemoryAccess;
-import dataaccess.memoryDataAccess.UserDataMemoryAccess;
-import dataaccess.memoryDataAccess.GameDataMemoryAccess;
-import Service.UserService;
-import Service.GameService;
-import Service.AuthService;
+import service.AuthService;
+import service.GameService;
+import service.UserService;
 import dataaccess.DataAccessException;
+import dataaccess.memorydataaccess.AuthDataMemoryAccess;
+import dataaccess.memorydataaccess.GameDataMemoryAccess;
+import dataaccess.memorydataaccess.UserDataMemoryAccess;
 
 public class Server {
     private final UserService userService;
@@ -156,19 +156,24 @@ public class Server {
         return new Gson().toJson(userAuth);
     }
 
+    private Object getErrorMessage(DataAccessException e, Response res) {
+        if (e.getMessage() == "Error: unauthorized") {
+            res.status(401);
+        } else {
+            res.status(500);
+        }
+        return new Gson().toJson(new MyError(e.getMessage()));
+    }
+
     private Object logoutHandler(Request req, Response res) throws DataAccessException {
         String authToken = req.headers("authorization");
 
         try {
             userService.logout(authToken);
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: unauthorized") {
-                res.status(401);
-            } else {
-                res.status(500);
-            }
-            return new Gson().toJson(new MyError(e.getMessage()));
+            return getErrorMessage(e, res);
         }
+        res.status(200);
         return "{}";
     }
 
@@ -178,12 +183,7 @@ public class Server {
         try {
             games = gameService.listGames(authToken);
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: unauthorized") {
-                res.status(401);
-            } else {
-                res.status(500);
-            }
-            return new Gson().toJson(new MyError(e.getMessage()));
+            return getErrorMessage(e, res);
         }
 
         res.status(200);
@@ -191,7 +191,6 @@ public class Server {
     }
 
     private Object createGameHandler(Request req, Response res) throws DataAccessException {
-        // String gameName = req.queryParams("gameName");
         CreateGame gameName = new Gson().fromJson(req.body(), CreateGame.class);
         String authToken = req.headers("authorization");
         int gameId;
