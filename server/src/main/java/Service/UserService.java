@@ -35,6 +35,29 @@ public class UserService {
     return authDataAccess.createAuth(userData.username());
   }
 
-  // public LoginResult Login(LoginRequest loginRequest) {}
-  // public void logout(LogoutRequest logoutReuest) {}
+  public AuthData Login(String userName, String password) throws DataAccessException{
+    if (userName == null || password == null) {
+      throw new DataAccessException("Error: bad request");
+    }
+
+    try {
+      UserData userData = userDataAccess.getUser(userName);
+      if (!userData.password().equals(password)) {
+        throw new DataAccessException("Error: unauthorized");
+      } else {
+        return authDataAccess.createAuth(userName);
+      }
+    } catch (DataAccessException e) {
+      throw new DataAccessException("Error: no user under that userName");
+    }
+  }
+
+  public void Logout(String authToken) throws DataAccessException {
+    try {
+      AuthData authData = authDataAccess.geAuthData(authToken);
+      userDataAccess.deleteUserData(authData.username());
+    } catch (DataAccessException e) {
+      throw new DataAccessException("Error: unauthorized");
+    }
+  }
 }

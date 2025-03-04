@@ -17,4 +17,5 @@ private final AuthDataAccess authDataAccess;
       authDataAccess.clearAuthData();
     } catch (DataAccessException e) {}
   }
+
 }

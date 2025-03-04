@@ -43,6 +43,9 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::DeleteHandler);
         Spark.post("/user", this::RegisterHandler);
+        Spark.post("/session", this::LoginHandler);
+        Spark.delete("/session", this::LogoutHandler);
+        Spark.post("/game", this::ListGamehandler);
     
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -92,5 +95,54 @@ public class Server {
         return new Gson().toJson(userauth);
     }
 
+    private Object LoginHandler(Request req, Response res) throws DataAccessException {
+        var userData = new Gson().fromJson(req.body(), UserData.class);
+        AuthData userAuth = null;
+        try {
+            userAuth = userService.Login(userData.username(), userData.password());
+        } catch (DataAccessException e) {
+            if (e.getMessage() == "Error: unauthorized") {
+                res.status(401);
+            } else {
+                res.status(500);
+            }
+            return new Gson().toJson(e.getMessage());
+        }
+
+        res.status(200);
+        return userAuth;
+    }
+
+    private Object LogoutHandler(Request req, Response res) throws DataAccessException {
+        String authToken = req.headers("authorization");
+
+        try {
+           userService.Logout(authToken); 
+        } catch (DataAccessException e) {
+            if (e.getMessage() == "Error: unauthorized") {
+                res.status(401);
+            } else {
+                res.status(500);
+            }
+            return new Gson().toJson(e.getMessage());
+        }
+        return new Gson().toJson("");
+    }
+
+    private Object ListGamehandler(Request req, Response res) throws DataAccessException {
+        String authToken = req.headers("authorization");
+
+        try {
+            gameService.listGames(authToken);
+         } catch (DataAccessException e) {
+             if (e.getMessage() == "Error: unauthorized") {
+                 res.status(401);
+             } else {
+                 res.status(500);
+             }
+             return new Gson().toJson(e.getMessage());
+         }
+         return new Gson().toJson("");
+     }
 
 }

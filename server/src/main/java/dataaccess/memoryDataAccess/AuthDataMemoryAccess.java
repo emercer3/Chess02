@@ -8,7 +8,7 @@ import java.util.UUID;
 import dataaccess.DataAccessException;
 
 public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
-  final private HashMap<String, String> autherizes = new HashMap<>();
+  final private HashMap<String, AuthData> autherizes = new HashMap<>();
 
   public static String generateToken() {
     return UUID.randomUUID().toString();
@@ -17,14 +17,14 @@ public class AuthDataMemoryAccess implements dataaccess.AuthDataAccess {
   @Override
   public AuthData createAuth(String userName) throws DataAccessException {
     String authToken = generateToken();
-
-    autherizes.put(authToken, userName); 
-    return new AuthData(authToken, userName);
+    AuthData authData = new AuthData(authToken, userName);
+    autherizes.put(authToken, authData); 
+    return authData;
   }
 
   @Override
-  public String geAuthData(String authToken) throws DataAccessException {
-    if ( autherizes.containsKey(authToken) == false) {
+  public AuthData geAuthData(String authToken) throws DataAccessException {
+    if (autherizes.containsKey(authToken) == false) {
       throw new DataAccessException("no autherization found");
     }
 
