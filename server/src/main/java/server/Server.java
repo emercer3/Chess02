@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import spark.*;
 
 import model.UserData;
@@ -13,25 +16,38 @@ import service.AuthService;
 import service.GameService;
 import service.UserService;
 import dataaccess.DataAccessException;
-import dataaccess.memorydataaccess.AuthDataMemoryAccess;
-import dataaccess.memorydataaccess.GameDataMemoryAccess;
-import dataaccess.memorydataaccess.UserDataMemoryAccess;
+// import dataaccess.memorydataaccess.AuthDataMemoryAccess;
+// import dataaccess.memorydataaccess.GameDataMemoryAccess;
+// import dataaccess.memorydataaccess.UserDataMemoryAccess;
+import dataaccess.sqldataaccess.*;
 
 public class Server {
     private final UserService userService;
     private final GameService gameService;
     private final AuthService authService;
-    private final UserDataMemoryAccess userData;
-    private final AuthDataMemoryAccess authData;
-    private final GameDataMemoryAccess gameData;
+    private final dataaccess.UserDataAccess userData;
+    private final dataaccess.AuthDataAccess authData;
+    private final dataaccess.GameDataAccess gameData;
 
     public Server() {
-        this.userData = new UserDataMemoryAccess();
-        this.authData = new AuthDataMemoryAccess();
-        this.gameData = new GameDataMemoryAccess();
+        // this.userData = new UserDataMemoryAccess();
+        // this.authData = new AuthDataMemoryAccess();
+        // this.gameData = new GameDataMemoryAccess();
+        try {
+            this.userData = new UserSQLDataAccess();
+            this.authData = new AuthSQLDataAccess();
+            this.gameData = new GameSQLDataAccess();
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+
         this.userService = new UserService(userData, authData);
         this.gameService = new GameService(gameData, authData);
         this.authService = new AuthService(authData);
+    }
+
+    private String encryptpassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     private record MyError(String message) {}
@@ -43,13 +59,6 @@ public class Server {
     private record ListGames(Collection<GameSummaryData> games) {}
 
     private record CreateGame(String gameName) {}
-    // class CreateGame {
-    //     String gameName;
-
-    //     public CreateGame(String gameName) {
-    //         this.gameName = gameName;
-    //     }
-    // }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -94,9 +103,10 @@ public class Server {
 
     private Object registerHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
+        UserData userData= new UserData(user.username(), encryptpassword(user.password()),user.email());
         AuthData userAuth = null;
         try {
-            userAuth = userService.register(user);
+            userAuth = userService.register(userData);
         } catch (DataAccessException e) {
             if (e.getMessage().equals("Error: bad request")) {
                 res.status(400);
@@ -114,7 +124,8 @@ public class Server {
     }
 
     private Object loginHandler(Request req, Response res) throws DataAccessException {
-        var userData = new Gson().fromJson(req.body(), UserData.class);
+        var user = new Gson().fromJson(req.body(), UserData.class);
+        UserData userData = new UserData(user.username(), encryptpassword(user.password()),user.email());
         AuthData userAuth = null;
         try {
             userAuth = userService.login(userData.username(), userData.password());
