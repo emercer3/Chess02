@@ -34,40 +34,22 @@ public class Server {
         this.authService = new AuthService(authData);
     }
 
-    class MyError {
-        String message;
+    private record MyError(String message) {}
+    
+    private record GameId(int gameID) {}
 
-        public MyError(String message) {
-            this.message = message;
-        }
-    }
+    private record JoinRequest(String playerColor, int gameID) {}
 
-    class GameId {
-        int gameID;
+    private record ListGames(Collection<GameSummaryData games) {}
+    // class ListGames {
+    //     Collection<GameSummaryData> games;
 
-        public GameId(int gameID) {
-            this.gameID = gameID;
-        }
-    }
+    //     public ListGames(Collection<GameSummaryData> games) {
+    //         this.games = games;
+    //     }
+    // }
 
-    class JoinRequest {
-        String playerColor;
-        int gameID;
-
-        public JoinRequest(String playerColor, int gameID) {
-            this.playerColor = playerColor;
-            this.gameID = gameID;
-        }
-    }
-
-    class ListGames {
-        Collection<GameSummaryData> games;
-
-        public ListGames(Collection<GameSummaryData> games) {
-            this.games = games;
-        }
-    }
-
+    // private record CreateGame(String gameName) {}
     class CreateGame {
         String gameName;
 
