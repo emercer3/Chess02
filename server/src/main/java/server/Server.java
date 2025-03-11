@@ -40,23 +40,16 @@ public class Server {
 
     private record JoinRequest(String playerColor, int gameID) {}
 
-    private record ListGames(Collection<GameSummaryData games) {}
-    // class ListGames {
-    //     Collection<GameSummaryData> games;
+    private record ListGames(Collection<GameSummaryData> games) {}
 
-    //     public ListGames(Collection<GameSummaryData> games) {
-    //         this.games = games;
+    private record CreateGame(String gameName) {}
+    // class CreateGame {
+    //     String gameName;
+
+    //     public CreateGame(String gameName) {
+    //         this.gameName = gameName;
     //     }
     // }
-
-    // private record CreateGame(String gameName) {}
-    class CreateGame {
-        String gameName;
-
-        public CreateGame(String gameName) {
-            this.gameName = gameName;
-        }
-    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
