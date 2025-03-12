@@ -30,9 +30,6 @@ public class Server {
     private final dataaccess.GameDataAccess gameData;
 
     public Server() {
-        // this.userData = new UserDataMemoryAccess();
-        // this.authData = new AuthDataMemoryAccess();
-        // this.gameData = new GameDataMemoryAccess();
         try {
             this.userData = new UserSQLDataAccess();
             this.authData = new AuthSQLDataAccess();

@@ -1,16 +1,13 @@
 package dataaccess.sqldataaccess;
 
-import model.UserData;
 import dataaccess.DataAccessException;
-
-import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class DataBase {
 
-  private static final String[] createStatements = {
+  private static final String[] CREATE_STATEMENTS = {
     """
         CREATE TABLE IF NOT EXISTS userData (
           `username` varchar(255) NOT NULL,
@@ -44,7 +41,7 @@ public class DataBase {
   static void configureDatabase() throws DataAccessException {
     DatabaseManager.createDatabase();
     try (var conn = DatabaseManager.getConnection()) {
-      for (var statement : createStatements) {
+      for (var statement : CREATE_STATEMENTS) {
         try (var preparedStatement = conn.prepareStatement(statement)) {
           preparedStatement.executeUpdate();
         }
@@ -60,12 +57,13 @@ public class DataBase {
       try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
         for (var i = 0; i < params.length; i++) {
           var param = params[i];
-          if (param instanceof String p)
+          if (param instanceof String p) {
             ps.setString(i + 1, p);
-          else if (param instanceof Integer p)
+          } else if (param instanceof Integer p) {
             ps.setInt(i + 1, p);
-          else if (param == null)
+          } else if (param == null) {
             ps.setNull(i + 1, NULL);
+          }
         }
         ps.executeUpdate();
 
