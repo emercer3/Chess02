@@ -23,8 +23,8 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
     """
     CREATE TABLE IF NOT EXISTS gameData (
       `gameID` int NOT NULL AUTO_INCREMENT,
-      `WhiteUsername` varchar(255) NOT NULL,
-      `BlackUsername` varchar(255) NOT NULL,
+      `WhiteUsername` varchar(255),
+      `BlackUsername` varchar(255),
       `gameName` varchar(255) NOT NULL,
       `game` TEXT NOT NULL,
       PRIMARY KEY (`gameID`),
@@ -109,8 +109,8 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
 
   @Override
   public int createGame(String gameName) throws DataAccessException {
-    var statement = "INSERT INTO gameData (gameID, WhiteUsername, BlackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
-    return executeUpdate(statement, null, null, gameName, new Gson().toJson(new ChessGame()));
+    var statement = "INSERT INTO gameData (gameName, game) VALUES (?, ?)";
+    return executeUpdate(statement, gameName, new Gson().toJson(new ChessGame()));
   }
 
   @Override

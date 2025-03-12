@@ -38,7 +38,10 @@ public class GameService {
   public Collection<GameSummaryData> listGames(String authToken) throws DataAccessException {
 
     try {
-      authDataAccess.getAuthData(authToken);
+      AuthData authData = authDataAccess.getAuthData(authToken);
+      if (authData == null) {
+        throw new DataAccessException("Error: unauthorized");
+      }
       return gameDataAccess.listGames();
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
@@ -46,8 +49,12 @@ public class GameService {
   }
 
   public int createGame(String authToken, String gameName) throws DataAccessException {
+    AuthData auth = null;
     try {
-      authDataAccess.getAuthData(authToken);
+      auth = authDataAccess.getAuthData(authToken);
+      if (auth == null) {
+        throw new DataAccessException("Error: unauthorized");
+      }
       return gameDataAccess.createGame(gameName);
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
@@ -64,6 +71,9 @@ public class GameService {
 
     try {
       authData = authDataAccess.getAuthData(authToken);
+      if (authData == null) {
+        throw new DataAccessException("Error: unauthorized");
+      }
       gameData = gameDataAccess.getGame(gameId);
     } catch (DataAccessException e) {
       throw new DataAccessException(e.getMessage());
