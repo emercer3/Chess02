@@ -22,13 +22,13 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
   private final String[] createStatements = {
     """
     CREATE TABLE IF NOT EXISTS gameData (
-      'gameID' int NOT NULL AUTO_INCREMENT,
-      'WhiteUsername' CHAR(255) NOT NULL,
-      'BlackUsername' CHAR(255) NOT NULL,
-      'gameName' CHAR(255) NOT NULL,
-      'game' TEXT DEFAULT NOT NULL,
-      PRIMARY KEY ('gameID');
-      INDEX(gameID);
+      `gameID` int NOT NULL AUTO_INCREMENT,
+      `WhiteUsername` varchar(255) NOT NULL,
+      `BlackUsername` varchar(255) NOT NULL,
+      `gameName` varchar(255) NOT NULL,
+      `game` TEXT NOT NULL,
+      PRIMARY KEY (`gameID`),
+      INDEX(`gameID`)
     )
     """
   };
@@ -109,7 +109,7 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
 
   @Override
   public int createGame(String gameName) throws DataAccessException {
-    var statement = "INSERT INTO gameData (username, password, email) VAUES (?, ?, ?)";
+    var statement = "INSERT INTO gameData (gameID, WhiteUsername, BlackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
     return executeUpdate(statement, null, null, gameName, new Gson().toJson(new ChessGame()));
   }
 

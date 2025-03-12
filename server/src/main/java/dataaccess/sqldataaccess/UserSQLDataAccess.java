@@ -18,11 +18,11 @@ public class UserSQLDataAccess implements dataaccess.UserDataAccess {
   private final String[] createStatements = {
     """
     CREATE TABLE IF NOT EXISTS userData (
-      'username' CHAR(255) NOT NULL,
-      'password' CHAR(255) NOT NULL,
-      'email' varchar(256) NOT NULL,
-      PRIMARY KEY ('username');
-      INDEX(username);
+      `username` varchar(255) NOT NULL,
+      `password` varchar(255) NOT NULL,
+      `email` varchar(256) NOT NULL,
+      PRIMARY KEY (`username`),
+      INDEX(`username`)
     )
     """
   };
@@ -78,7 +78,7 @@ public class UserSQLDataAccess implements dataaccess.UserDataAccess {
 
   @Override
   public void createUser(UserData userData) throws DataAccessException {
-    var statement = "INSERT INTO userData (username, password, email) VAUES (?, ?, ?)";
+    var statement = "INSERT INTO userData (username, password, email) VALUES (?, ?, ?)";
     executeUpdate(statement, userData.username(), userData.password(), userData.email());
   }
 

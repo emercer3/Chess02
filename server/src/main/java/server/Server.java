@@ -16,9 +16,9 @@ import service.AuthService;
 import service.GameService;
 import service.UserService;
 import dataaccess.DataAccessException;
-// import dataaccess.memorydataaccess.AuthDataMemoryAccess;
-// import dataaccess.memorydataaccess.GameDataMemoryAccess;
-// import dataaccess.memorydataaccess.UserDataMemoryAccess;
+import dataaccess.memorydataaccess.AuthDataMemoryAccess;
+import dataaccess.memorydataaccess.GameDataMemoryAccess;
+import dataaccess.memorydataaccess.UserDataMemoryAccess;
 import dataaccess.sqldataaccess.*;
 
 public class Server {
@@ -103,10 +103,17 @@ public class Server {
 
     private Object registerHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        UserData userData= new UserData(user.username(), encryptpassword(user.password()),user.email());
+        UserData newUserData = null;
         AuthData userAuth = null;
+
+        if (user.password() == null) {
+            newUserData = new UserData(user.username(), null, user.email());
+        } else {
+            newUserData = new UserData(user.username(), encryptpassword(user.password()), user.email());
+        }
+
         try {
-            userAuth = userService.register(userData);
+            userAuth = userService.register(newUserData);
         } catch (DataAccessException e) {
             if (e.getMessage().equals("Error: bad request")) {
                 res.status(400);
@@ -125,10 +132,10 @@ public class Server {
 
     private Object loginHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        UserData userData = new UserData(user.username(), encryptpassword(user.password()),user.email());
+        // UserData userData = new UserData(user.username(), encryptpassword(user.password()),user.email());
         AuthData userAuth = null;
         try {
-            userAuth = userService.login(userData.username(), userData.password());
+            userAuth = userService.login(user.username(), user.password());
         } catch (DataAccessException e) {
            return getErrorMessage(e, res);
         }

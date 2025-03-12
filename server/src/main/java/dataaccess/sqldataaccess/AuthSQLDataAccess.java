@@ -15,11 +15,11 @@ public class AuthSQLDataAccess implements dataaccess.AuthDataAccess {
 
   private final String[] createStatements = {
     """
-    CREATE TABLE IF NOT EXISTS userData (
-      'authToken' CHAR(255) NOT NULL,
-      'username' CHAR(255) NOT NULL,
-      PRIMARY KEY ('authToken');
-      INDEX(authToken);
+    CREATE TABLE IF NOT EXISTS authData (
+      `authToken` CHAR(255) NOT NULL,
+      `username` CHAR(255) NOT NULL,
+      PRIMARY KEY (`authToken`),
+      INDEX(`authToken`)
     )
     """
   };
@@ -78,7 +78,7 @@ public class AuthSQLDataAccess implements dataaccess.AuthDataAccess {
 
   @Override
   public AuthData createAuth(String userName) throws DataAccessException {
-    var statement = "INSERT INTO authData (authToken, username) VAUES (?, ?)";
+    var statement = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
     String authToken = generateToken();
     executeUpdate(statement, authToken, userName);
     return new AuthData(authToken, userName);

@@ -24,7 +24,7 @@ apt-get update
 # Install MySQL Server and MySQL Shell
 DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-shell
 
-# Start MySQL using `mysqld_safe`
+# Start MySQL using `mysqld_safe`  use this line to start but add `sudo` before it, after mysql --port=something, then mysqlsh root@localhost --sql, mysqladmin -u root -p shutdown
 echo "🚀 Starting MySQL..."
 nohup mysqld_safe --datadir=/var/lib/mysql > /dev/null 2>&1 &
 

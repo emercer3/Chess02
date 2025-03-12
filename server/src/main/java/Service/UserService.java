@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.UserDataAccess;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import model.AuthData;
@@ -26,12 +29,14 @@ public class UserService {
     if (userData.username() == null || userData.password() == null || userData.email() == null) {
       throw new DataAccessException("Error: bad request");
     }
-
+    UserData existingUserData = null;
     try {
-      userDataAccess.getUser(userData.username());
-    } catch (DataAccessException e) {
-    }
+      existingUserData = userDataAccess.getUser(userData.username());
+    } catch (DataAccessException e) {}
 
+    if (existingUserData != null) {
+      throw new DataAccessException("Error: already taken");
+    }
     userDataAccess.createUser(userData);
     return authDataAccess.createAuth(userData.username());
   }
@@ -47,7 +52,11 @@ public class UserService {
       throw new DataAccessException("Error: unauthorized");
     }
 
-    if (!userData.password().equals(password)) {
+    if (userData == null) {
+      throw new DataAccessException("Error: unauthorized");
+    }
+    
+    if (!BCrypt.checkpw(password, userData.password())) {
       throw new DataAccessException("Error: unauthorized");
     } else {
       return authDataAccess.createAuth(userName);
@@ -57,6 +66,9 @@ public class UserService {
   public void logout(String authToken) throws DataAccessException {
     try {
       AuthData authData = authDataAccess.getAuthData(authToken);
+      if (authData == null) {
+        throw new DataAccessException("Error: unauthorized");
+      }
       userDataAccess.deleteUserData(authData.username());
       authDataAccess.deleteAuth(authToken);
     } catch (DataAccessException e) {
