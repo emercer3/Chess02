@@ -1,77 +1,17 @@
 package dataaccess.sqldataaccess;
 
-// import model.AuthData;
 import model.GameData;
 import model.GameSummaryData;
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-// import dataaccess.GameDataAccess;
 
 import java.util.Collection;
-// import java.util.HashMap;
 import java.util.ArrayList;
 import com.google.gson.Gson;
 
 import java.sql.*;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class GameSQLDataAccess implements dataaccess.GameDataAccess {
-
-  private final String[] createStatements = {
-      """
-          CREATE TABLE IF NOT EXISTS gameData (
-            `gameID` int NOT NULL AUTO_INCREMENT,
-            `WhiteUsername` varchar(255),
-            `BlackUsername` varchar(255),
-            `gameName` varchar(255) NOT NULL,
-            `game` TEXT NOT NULL,
-            PRIMARY KEY (`gameID`),
-            INDEX(`gameID`)
-          )
-          """
-  };
-
-  private void configureDatabase() throws DataAccessException {
-    DatabaseManager.createDatabase();
-    try (var conn = DatabaseManager.getConnection()) {
-      for (var statement : createStatements) {
-        try (var preparedStatement = conn.prepareStatement(statement)) {
-          preparedStatement.executeUpdate();
-        }
-      }
-    } catch (Exception e) {
-      throw new DataAccessException(e.getMessage());
-    }
-
-  }
-
-  private int executeUpdate(String statement, Object... params) throws DataAccessException {
-    try (var conn = DatabaseManager.getConnection()) {
-      try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-        for (var i = 0; i < params.length; i++) {
-          var param = params[i];
-          if (param instanceof String p)
-            ps.setString(i + 1, p);
-          else if (param instanceof Integer p)
-            ps.setInt(i + 1, p);
-          else if (param == null)
-            ps.setNull(i + 1, NULL);
-        }
-        ps.executeUpdate();
-
-        var rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-          return rs.getInt(1);
-        }
-
-        return 0;
-      }
-    } catch (Exception e) {
-      throw new DataAccessException(e.getMessage());
-    }
-  }
 
   private GameData readGameData(ResultSet rs) throws SQLException {
     var gameId = rs.getInt("gameID");
@@ -85,7 +25,7 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
   }
 
   public GameSQLDataAccess() throws DataAccessException {
-    configureDatabase();
+    DataBase.configureDatabase();
   }
 
   @Override
@@ -113,7 +53,7 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
   @Override
   public int createGame(String gameName) throws DataAccessException {
     var statement = "INSERT INTO gameData (gameName, game) VALUES (?, ?)";
-    return executeUpdate(statement, gameName, new Gson().toJson(new ChessGame()));
+    return DataBase.executeUpdate(statement, gameName, new Gson().toJson(new ChessGame()));
   }
 
   @Override
@@ -137,14 +77,14 @@ public class GameSQLDataAccess implements dataaccess.GameDataAccess {
   @Override
   public void updateGame(GameData gameData) throws DataAccessException {
     var statement = "UPDATE gameData SET WhiteUsername=?, BlackUsername=?, game=? WHERE gameID=?";
-    executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), new Gson().toJson(gameData.game()),
+    DataBase.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), new Gson().toJson(gameData.game()),
         gameData.gameID());
   }
 
   @Override
   public void clearGameData() throws DataAccessException {
     var statement = "TRUNCATE gameData";
-    executeUpdate(statement);
+    DataBase.executeUpdate(statement);
   }
 
 }
