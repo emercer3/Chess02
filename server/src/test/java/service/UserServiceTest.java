@@ -27,6 +27,8 @@ public class UserServiceTest {
   @BeforeEach
   void clear() throws DataAccessException {
     USER_SERVICE.clearUserData();
+    GAME_SERVICE.clearGameData();
+    AUTH_SERVICE.clearAuthData();
   }
 
   @Test
