@@ -30,6 +30,7 @@ public class Server {
     private final dataaccess.GameDataAccess gameData;
 
     public Server() {
+        
         try {
             this.userData = new UserSQLDataAccess();
             this.authData = new AuthSQLDataAccess();

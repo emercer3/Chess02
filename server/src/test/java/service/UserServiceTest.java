@@ -11,6 +11,8 @@ import model.GameSummaryData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,7 +93,8 @@ public class UserServiceTest {
   void loginGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    AuthData regAuthData = USER_SERVICE.register(userData);
+    UserData newUserData = new UserData(userData.username(), BCrypt.hashpw(userData.password(), BCrypt.gensalt()), userData.email());
+    AuthData regAuthData = USER_SERVICE.register(newUserData);
 
     // when
     AuthData logAuthData = USER_SERVICE.login("username", "password");
@@ -121,7 +124,8 @@ public class UserServiceTest {
   void logoutGood() throws DataAccessException {
     // given
     UserData userData = new UserData("username", "password", "email");
-    USER_SERVICE.register(userData);
+    UserData newUserData = new UserData(userData.username(), BCrypt.hashpw(userData.password(), BCrypt.gensalt()), userData.email());
+    USER_SERVICE.register(newUserData);
     AuthData loginAuthData = USER_SERVICE.login("username", "password");
 
     // when
