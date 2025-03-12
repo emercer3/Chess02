@@ -50,15 +50,20 @@ public class Server {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    private record MyError(String message) {}
-    
-    private record GameId(int gameID) {}
+    private record MyError(String message) {
+    }
 
-    private record JoinRequest(String playerColor, int gameID) {}
+    private record GameId(int gameID) {
+    }
 
-    private record ListGames(Collection<GameSummaryData> games) {}
+    private record JoinRequest(String playerColor, int gameID) {
+    }
 
-    private record CreateGame(String gameName) {}
+    private record ListGames(Collection<GameSummaryData> games) {
+    }
+
+    private record CreateGame(String gameName) {
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -132,12 +137,13 @@ public class Server {
 
     private Object loginHandler(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        // UserData userData = new UserData(user.username(), encryptpassword(user.password()),user.email());
+        // UserData userData = new UserData(user.username(),
+        // encryptpassword(user.password()),user.email());
         AuthData userAuth = null;
         try {
             userAuth = userService.login(user.username(), user.password());
         } catch (DataAccessException e) {
-           return getErrorMessage(e, res);
+            return getErrorMessage(e, res);
         }
 
         res.status(200);

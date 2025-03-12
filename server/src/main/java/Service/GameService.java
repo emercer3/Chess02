@@ -7,7 +7,6 @@ import model.AuthData;
 import model.GameData;
 import model.GameSummaryData;
 
-
 import java.util.Collection;
 
 public class GameService {

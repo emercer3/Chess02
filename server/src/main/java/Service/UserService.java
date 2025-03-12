@@ -32,7 +32,8 @@ public class UserService {
     UserData existingUserData = null;
     try {
       existingUserData = userDataAccess.getUser(userData.username());
-    } catch (DataAccessException e) {}
+    } catch (DataAccessException e) {
+    }
 
     if (existingUserData != null) {
       throw new DataAccessException("Error: already taken");
@@ -55,7 +56,7 @@ public class UserService {
     if (userData == null) {
       throw new DataAccessException("Error: unauthorized");
     }
-    
+
     if (!BCrypt.checkpw(password, userData.password())) {
       throw new DataAccessException("Error: unauthorized");
     } else {
