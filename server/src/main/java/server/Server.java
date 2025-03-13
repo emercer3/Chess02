@@ -16,9 +16,6 @@ import service.AuthService;
 import service.GameService;
 import service.UserService;
 import dataaccess.DataAccessException;
-import dataaccess.memorydataaccess.AuthDataMemoryAccess;
-import dataaccess.memorydataaccess.GameDataMemoryAccess;
-import dataaccess.memorydataaccess.UserDataMemoryAccess;
 import dataaccess.sqldataaccess.*;
 
 public class Server {
