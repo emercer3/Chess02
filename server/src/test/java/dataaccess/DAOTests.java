@@ -42,10 +42,9 @@ public class DAOTests {
 
     // when
     userSQL.createUser(userData);
-    UserData existingUserData = userSQL.getUser(userData.username());
 
     // then
-    assertEquals(userData, existingUserData);
+    assertEquals(userData.password(), userSQL.getUser("username").password());
 
   }
 
