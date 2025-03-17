@@ -1,10 +1,11 @@
-package chess.server;
+package server;
 
 import com.google.gson.Gson;
 // import exception.ErrorResponse;
 // import exception.ResponseException;
 import java.io.*;
 import java.net.*;
+import java.util.Collection;
 
 import model.*;
 
@@ -17,13 +18,13 @@ public class ServerFacade {
 
   private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
     try{
-      URL url = (new URI(serverUrl + path)).toURL();
-      HttpURLConnection http = (httpURLConnection) url.openConnection();
+      URI uri = new URI(serverUrl);
+      HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
       http.setRequestMethod(method);
       http.setDoOutput(true);
 
       writeBody(request, http);
-      http.connet();
+      http.connect();
       throwIfNotSuccessful(http);
       return readBody(http, responseClass);
     } catch (Exception e) {
@@ -79,8 +80,36 @@ public class ServerFacade {
 
   public AuthData login(String userName, String password) throws Exception {
     var path = "/session";
-    return this.makeRequest("POST", path, userName, password, AuthData.class)
+    return this.makeRequest("POST", path, userName, password, AuthData.class);
   }
+
+  public void logout(String authToken) throws Exception {
+    var path = "/session";
+    this.makeRequest("DELETE", path, authToken, null);
+  }
+
+  public Collection<GameSummaryData> listGames(String authToken) throws Exception {
+    var path = "/game";
+    record listGamesResponse(Collection<GameSummaryData> games) {}
+    var response = this.makeRequest("GET", path, authToken, listGamesResponse.class);
+    return response.games();
+  }
+
+  public int createGame(String authToken, String gameName) throws Exception {
+    var path = "/game";
+    return this.makeRequest("POST", path, authToken, gameName, int.class);
+  }
+
+  public void joinGame(String authToken, String gameName) throws Exception {
+    var path = "/game";
+    this.makeRequest("PUT", path, authToken, gameName, null);
+  }
+
+  public void delete() throws Exception {
+    var path = "/db";
+    this.makeRequest("DELETE", path, null, null);
+  }
+
 
 
 
