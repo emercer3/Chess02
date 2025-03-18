@@ -16,7 +16,7 @@ public class ServerFacade {
     serverUrl = url;
   }
 
-  private <T> T makeRequest(String method, String path, Object header, Object request, Class<T> responseClass) throws Exception {
+  private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws Exception {
     try{
       URI uri = new URI(serverUrl);
       HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -38,13 +38,9 @@ public class ServerFacade {
     }
   }
 
-  private static void writeHeader(Object header, HttpURLConnection http) throws IOException {
-    if (header instanceof Map<?, ?> headers) {
-        for (var entry : headers.entrySet()) {
-            if (entry.getKey() instanceof String key && entry.getValue() instanceof String value) {
-                http.addRequestProperty(key, value);
-            }
-        }
+  private static void writeHeader(String header, HttpURLConnection http) throws IOException {
+    if (header != null) {
+      http.addRequestProperty("Authorization", header);
     }
   }
 
@@ -63,7 +59,7 @@ public class ServerFacade {
     if (!isSuccessful(status)) {
       try (InputStream respErr = http.getErrorStream()) {
         if (respErr != null) {
-          throw ResponseException.fromJson(respErr); // need to make exception class
+          throw ResponseException.fromJson(respErr);
         }
       }
     }
