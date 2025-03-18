@@ -1,11 +1,11 @@
 package server;
 
 import com.google.gson.Gson;
-// import exception.ErrorResponse;
-// import exception.ResponseException;
+import exception.ResponseException;
 import java.io.*;
 import java.net.*;
 import java.util.Collection;
+import java.util.Map;
 
 import model.*;
 
@@ -16,23 +16,36 @@ public class ServerFacade {
     serverUrl = url;
   }
 
-  private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+  private <T> T makeRequest(String method, String path, Object header, Object request, Class<T> responseClass) throws Exception {
     try{
       URI uri = new URI(serverUrl);
       HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
       http.setRequestMethod(method);
       http.setDoOutput(true);
-
-      writeBody(request, http);
+      if (request != null) {
+        writeBody(request, http);
+      } 
+      if (header != null) {
+        writeHeader(header, http);
+      }
       http.connect();
       throwIfNotSuccessful(http);
       return readBody(http, responseClass);
-    } catch (Exception e) {
+    } catch (ResponseException e) {
       throw e;
-    } 
-    // catch (Exception e) {
-    //   throw new Exception(500, e.getMessage());
-    // }
+    } catch (Exception e) {
+      throw new ResponseException(500, e.getMessage());
+    }
+  }
+
+  private static void writeHeader(Object header, HttpURLConnection http) throws IOException {
+    if (header instanceof Map<?, ?> headers) {
+        for (var entry : headers.entrySet()) {
+            if (entry.getKey() instanceof String key && entry.getValue() instanceof String value) {
+                http.addRequestProperty(key, value);
+            }
+        }
+    }
   }
 
   private static void writeBody(Object request, HttpURLConnection http) throws IOException {
@@ -45,12 +58,12 @@ public class ServerFacade {
     }
   }
 
-  private void throwIfNotSuccessful(HttpURLConnection http) throws IOException {
+  private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
     var status = http.getResponseCode();
     if (!isSuccessful(status)) {
       try (InputStream respErr = http.getErrorStream()) {
         if (respErr != null) {
-          throw Exception.fromJson(respErr); // need to make exception class
+          throw ResponseException.fromJson(respErr); // need to make exception class
         }
       }
     }
@@ -75,23 +88,24 @@ public class ServerFacade {
 
   public AuthData register(UserData userData) throws Exception {
     var path = "/user";
-    return this.makeRequest("POST", path, userData, AuthData.class);
+    return this.makeRequest("POST", path, null, userData, AuthData.class);
   }
 
   public AuthData login(String userName, String password) throws Exception {
     var path = "/session";
-    return this.makeRequest("POST", path, userName, password, AuthData.class);
+    UserData user = new UserData(userName, password, null);
+    return this.makeRequest("POST", path, null, user, AuthData.class);
   }
 
   public void logout(String authToken) throws Exception {
     var path = "/session";
-    this.makeRequest("DELETE", path, authToken, null);
+    this.makeRequest("DELETE", path, authToken, null, null);
   }
 
   public Collection<GameSummaryData> listGames(String authToken) throws Exception {
     var path = "/game";
     record listGamesResponse(Collection<GameSummaryData> games) {}
-    var response = this.makeRequest("GET", path, authToken, listGamesResponse.class);
+    var response = this.makeRequest("GET", path, authToken, null, listGamesResponse.class);
     return response.games();
   }
 
@@ -107,7 +121,7 @@ public class ServerFacade {
 
   public void delete() throws Exception {
     var path = "/db";
-    this.makeRequest("DELETE", path, null, null);
+    this.makeRequest("DELETE", path, null, null, null);
   }
 
 
