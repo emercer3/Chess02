@@ -17,8 +17,8 @@ public class ServerFacade {
   }
 
   private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws ResponseException {
-    try{
-      URI uri = new URI(serverUrl);
+    try {
+      URI uri = new URI(serverUrl + path);
       HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
       http.setRequestMethod(method);
       http.setDoOutput(true);
@@ -67,12 +67,11 @@ public class ServerFacade {
 
   private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
     T response = null;
-    if (http.getContentLength() < 0) {
-      try (InputStream respBody = http.getInputStream()) {
-        InputStreamReader reader = new InputStreamReader(respBody);
-        if (responseClass != null) {
-          response = new Gson().fromJson(reader, responseClass);
-        }
+    try (InputStream respBody = http.getInputStream()) {
+      InputStreamReader reader = new InputStreamReader(respBody);
+      String text = new String(respBody.readAllBytes());
+      if (responseClass != null) {
+        response = new Gson().fromJson(text, responseClass);
       }
     }
     return response;
