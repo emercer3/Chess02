@@ -102,9 +102,16 @@ public class ServerFacade {
     return response.games();
   }
 
+  public record gameName(String gameName) {
+  }
+
+  private record gameID(int gameID) {
+  }
+
   public int createGame(String authToken, String gameName) throws ResponseException {
     var path = "/game";
-    return this.makeRequest("POST", path, authToken, gameName, int.class);
+    gameID gameId = this.makeRequest("POST", path, authToken, new gameName(gameName), gameID.class);
+    return gameId.gameID();
   }
 
   public void joinGame(String authToken, String gameName) throws ResponseException {
