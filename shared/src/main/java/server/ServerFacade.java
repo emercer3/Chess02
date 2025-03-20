@@ -22,12 +22,10 @@ public class ServerFacade {
       HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
       http.setRequestMethod(method);
       http.setDoOutput(true);
-      if (request != null) {
-        writeBody(request, http);
-      } 
-      if (header != null) {
-        writeHeader(header, http);
-      }
+
+      writeHeader(header, http);
+      writeBody(request, http);
+
       http.connect();
       throwIfNotSuccessful(http);
       return readBody(http, responseClass);

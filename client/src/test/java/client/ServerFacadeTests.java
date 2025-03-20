@@ -1,5 +1,7 @@
 package client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.*;
 
@@ -42,5 +44,51 @@ public class ServerFacadeTests {
         var authData = facade.register(user);
         assertTrue(authData.authToken().length() > 10);
     }
+
+    @Test
+    void login() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+
+        // when
+        AuthData loginAuthData = facade.login(user.username(), user.password());
+
+        // then
+        assertEquals(loginAuthData.username(), "player1");
+        assertNotEquals(authData, loginAuthData);
+    }
+
+    @Test
+    void logout() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+
+        // when
+        facade.logout(authData.authToken());
+
+        // then
+        try {
+            facade.logout(authData.authToken());
+        } catch (Exception e) {
+            assertEquals("Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null", e.getMessage());
+        }
+    }
+
+    @Test
+    void createGame() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+
+        // when
+        int gameId = facade.createGame(authData.authToken(), "game1");
+
+        // then
+        assertEquals(1, gameId);
+    }
+
+
 
 }
