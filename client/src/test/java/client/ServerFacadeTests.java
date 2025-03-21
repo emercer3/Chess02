@@ -2,6 +2,7 @@ package client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.*;
 
@@ -80,11 +81,11 @@ public class ServerFacadeTests {
     void loginBad() throws Exception {
         // given
         UserData user = new UserData("player1", "password", "p1@email.com");
-        var authData = facade.register(user);
+        facade.register(user);
 
         // when and then
         try {
-            AuthData loginAuthData = facade.login(user.username(), "pasword");
+            facade.login(user.username(), "pasword");
         } catch (ResponseException e) {
             assertEquals(e.getMessage(), "Error: unauthorized");
         }
@@ -109,6 +110,17 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void logoutBad() throws Exception {
+        // given
+        // when and then
+        try {
+            facade.logout(null);
+        } catch (Exception e) {
+            assertEquals("Error: unauthorized", e.getMessage());
+        }
+    }
+
+    @Test
     void createGame() throws Exception {
         // given
         UserData user = new UserData("player1", "password", "p1@email.com");
@@ -119,6 +131,15 @@ public class ServerFacadeTests {
 
         // then
         assertEquals(1, gameId);
+    }
+
+    @Test
+    void createGameBad() throws Exception {
+        // given
+        new UserData("player1", "password", "p1@email.com");
+
+        // when and try
+        assertThrows(ResponseException.class, () -> facade.createGame("1234", "game1"));
     }
 
     @Test
@@ -140,6 +161,17 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void listGamesBad() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+        facade.createGame(authData.authToken(), "game1");
+
+        // when and then
+        assertThrows(ResponseException.class, () -> facade.listGames("123"));
+    }
+
+    @Test
     void joinGame() throws Exception {
         // given
         UserData user = new UserData("player1", "password", "p1@email.com");
@@ -151,6 +183,17 @@ public class ServerFacadeTests {
 
         // then
         
+    }
+
+    @Test
+    void joinGameBad() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+        int gameId = facade.createGame(authData.authToken(), "game1");
+
+        // when and then
+        assertThrows(ResponseException.class, () -> facade.joinGame("1234", "WHITE", gameId));
     }
 
 }
