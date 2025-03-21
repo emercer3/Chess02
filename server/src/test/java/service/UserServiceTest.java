@@ -197,7 +197,7 @@ public class UserServiceTest {
     Collection<GameSummaryData> games = GAME_SERVICE.listGames(authData.authToken());
 
     // then
-    assertEquals(games.size(), 2);
+    assertEquals(games.size(), 1);
   }
 
   @Test

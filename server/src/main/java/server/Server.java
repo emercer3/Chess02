@@ -20,6 +20,7 @@ import dataaccess.memorydataaccess.GameDataMemoryAccess;
 import dataaccess.memorydataaccess.UserDataMemoryAccess;
 import dataaccess.DataAccessException;
 import dataaccess.sqldataaccess.*;
+import exception.ResponseException;
 
 public class Server {
     private final UserService userService;
@@ -48,7 +49,7 @@ public class Server {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    private record MyError(String message) {
+    private record MyError(int status, String message) {
     }
 
     private record GameId(int gameID) {
@@ -118,15 +119,19 @@ public class Server {
         try {
             userAuth = userService.register(newUserData);
         } catch (DataAccessException e) {
+            int statusCode;
             if (e.getMessage().equals("Error: bad request")) {
+                statusCode = 400;
                 res.status(400);
             } else if (e.getMessage() == "Error: already taken") {
+                statusCode = 403;
                 res.status(403);
             } else {
+                statusCode = 500;
                 res.status(500);
             }
 
-            return new Gson().toJson(new MyError(e.getMessage()));
+            return new Gson().toJson(new MyError(statusCode, e.getMessage()));
         }
 
         res.status(200);
@@ -149,12 +154,15 @@ public class Server {
     }
 
     private Object getErrorMessage(DataAccessException e, Response res) {
+        int statusCode;
         if (e.getMessage() == "Error: unauthorized") {
+            statusCode = 401;
             res.status(401);
         } else {
+            statusCode = 500;
             res.status(500);
         }
-        return new Gson().toJson(new MyError(e.getMessage()));
+        return new Gson().toJson(new MyError(statusCode, e.getMessage()));
     }
 
     private Object logoutHandler(Request req, Response res) throws DataAccessException {
@@ -189,14 +197,18 @@ public class Server {
         try {
             gameId = gameService.createGame(authToken, gameName.gameName);
         } catch (DataAccessException e) {
+            int statusCode;
             if (e.getMessage() == "Error: bad request") {
+                statusCode = 400;
                 res.status(400);
             } else if (e.getMessage() == "Error: unauthorized") {
+                statusCode = 401;
                 res.status(401);
             } else {
+                statusCode = 500;
                 res.status(500);
             }
-            return new Gson().toJson(new MyError(e.getMessage()));
+            return new Gson().toJson(new MyError(statusCode, e.getMessage()));
         }
         res.status(200);
         return new Gson().toJson(new GameId(gameId));
@@ -209,16 +221,21 @@ public class Server {
         try {
             gameService.joinGame(authToken, gameinfo.playerColor, gameinfo.gameID);
         } catch (DataAccessException e) {
+            int statusCode;
             if (e.getMessage() == "Error: bad request") {
+                statusCode = 400;
                 res.status(400);
             } else if (e.getMessage() == "Error: unauthorized") {
+                statusCode = 401;
                 res.status(401);
             } else if (e.getMessage() == "Error: already taken") {
+                statusCode = 403;
                 res.status(403);
             } else {
+                statusCode = 500;
                 res.status(500);
             }
-            return new Gson().toJson(new MyError(e.getMessage()));
+            return new Gson().toJson(new MyError(statusCode, e.getMessage()));
         }
         res.status(200);
         return "{}";

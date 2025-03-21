@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import exception.ResponseException;
 import server.Server;
 import server.ServerFacade;
@@ -46,6 +50,19 @@ public class ServerFacadeTests {
     }
 
     @Test
+    void registerBad() throws Exception {
+        // given 
+        UserData user = new UserData("player1", null, "p1@email.com");
+
+        // when and then
+        try{
+            facade.register(user);
+        } catch (ResponseException e) {
+            assertEquals(e.getMessage(), "Error: bad request");
+        }
+    }
+
+    @Test
     void login() throws Exception {
         // given
         UserData user = new UserData("player1", "password", "p1@email.com");
@@ -57,6 +74,21 @@ public class ServerFacadeTests {
         // then
         assertEquals(loginAuthData.username(), "player1");
         assertNotEquals(authData, loginAuthData);
+    }
+
+    @Test  
+    void loginBad() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+
+        // when and then
+        try {
+            AuthData loginAuthData = facade.login(user.username(), "pasword");
+        } catch (ResponseException e) {
+            assertEquals(e.getMessage(), "Error: unauthorized");
+        }
+
     }
 
     @Test
@@ -72,7 +104,7 @@ public class ServerFacadeTests {
         try {
             facade.logout(authData.authToken());
         } catch (Exception e) {
-            assertEquals("Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null", e.getMessage());
+            assertEquals("Error: unauthorized", e.getMessage());
         }
     }
 
@@ -89,6 +121,36 @@ public class ServerFacadeTests {
         assertEquals(1, gameId);
     }
 
+    @Test
+    void listGames() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+        facade.createGame(authData.authToken(), "game1");
+        facade.createGame(authData.authToken(), "game2");
 
+        // when 
+        Collection<GameSummaryData> gameList = facade.listGames(authData.authToken());
+        List<GameSummaryData> gameListAsList = new ArrayList<>(gameList);
+
+        // then
+        assertEquals(gameListAsList.size(), 2);
+        assertEquals(gameListAsList.get(0).gameName(), "game1");
+        assertEquals(gameListAsList.get(1).gameName(), "game2");
+    }
+
+    @Test
+    void joinGame() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        var authData = facade.register(user);
+        int gameId = facade.createGame(authData.authToken(), "game1");
+
+        // when
+        facade.joinGame(authData.authToken(), "WHITE",gameId);
+
+        // then
+        
+    }
 
 }

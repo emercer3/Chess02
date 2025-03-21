@@ -52,6 +52,9 @@ public class ServerFacade {
     }
   }
 
+  private record MyError(String message) {
+  }
+
   private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
     var status = http.getResponseCode();
     if (!isSuccessful(status)) {
@@ -114,9 +117,13 @@ public class ServerFacade {
     return gameId.gameID();
   }
 
-  public void joinGame(String authToken, String gameName) throws ResponseException {
+  private record JoinRequest(String playerColor, int gameID) {
+  }
+
+  public void joinGame(String authToken, String playerColor, int gameId) throws ResponseException {
     var path = "/game";
-    this.makeRequest("PUT", path, authToken, gameName, null);
+
+    this.makeRequest("PUT", path, authToken, new JoinRequest(playerColor, gameId), null);
   }
 
   public void delete() throws ResponseException {
