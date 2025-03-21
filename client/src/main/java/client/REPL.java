@@ -28,15 +28,18 @@ public class REPL {
 
       try {
         switch (state) {
-          case "signedout":
+          case "signedout": {
             result = preClient.eval(line);
             state = preClient.getState();
             authToken = preClient.getAuthToken();
-          case "signedin":
+            break;
+          } case "signedin": {
             result = postClient.eval(line, authToken);
-            state = preClient.getState();
-          case "gametime":
+            state = postClient.getState();
+            break;
+          } case "gametime":
             // result = gameClient.eval(line);
+            // break;
         }
         System.out.print(result);
       } catch (Throwable e) {
@@ -48,6 +51,6 @@ public class REPL {
   }
 
   private void printPrompt() {
-    System.out.print("\n" + ">>>");
+    System.out.print("\n" + ">>> ");
   }
 }

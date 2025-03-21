@@ -44,7 +44,7 @@ public class PreClient {
         case "login" -> login(params);
         case "quit" -> "quit";
         case "help" -> help();
-        default -> help();
+        default -> "";
       };
     } catch (ResponseException e) {
       return e.getMessage();
@@ -99,7 +99,7 @@ public class PreClient {
 
   public String help() {
     return """
-        - resgister <username> <password> <email>
+        - register <username> <password> <email>
         - login <username> <password>
         - quit
         - help

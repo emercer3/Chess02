@@ -32,8 +32,8 @@ public class PostClient {
       return switch (cmd) {
         case "logout" -> logout(authToken);
         case "creategame" -> createGame(authToken, params);
-        case "listGames" -> listGames(authToken);
-        case "joinGame" -> joinGame(authToken, params);
+        case "listgames" -> listGames(authToken);
+        case "joingame" -> joinGame(authToken, params);
         case "quit" -> "quit";
         case "help" -> help();
         default -> help();
@@ -120,9 +120,9 @@ public class PostClient {
   public String help() {
     return """
         - logout
-        - createGame <game name>
-        - listGames
-        - joinGame <Color(WHITE/BLACK)> <gameID>
+        - creategame <gamename>
+        - listgames
+        - joingame <Color(WHITE/BLACK)> <gameID>
         - help
         """;
   }
