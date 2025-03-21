@@ -1,5 +1,6 @@
 package client;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,7 +26,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:" + port );
+        facade = new ServerFacade("http://localhost:" + port);
     }
 
     @BeforeEach
@@ -42,6 +43,25 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @Test
+    void delete() throws Exception {
+        // given
+        UserData user = new UserData("player1", "password", "p1@email.com");
+        facade.register(user);
+
+        // when
+        facade.delete();
+
+        // then
+        assertThrows(ResponseException.class, () -> facade.login(user.username(), user.password()));
+    }
+
+    @Test
+    void deleteBad() throws Exception {
+        // given nothing
+        // when and then
+        assertDoesNotThrow(() -> facade.delete(), "error");
+    }
 
     @Test
     void register() throws Exception {
@@ -52,11 +72,11 @@ public class ServerFacadeTests {
 
     @Test
     void registerBad() throws Exception {
-        // given 
+        // given
         UserData user = new UserData("player1", null, "p1@email.com");
 
         // when and then
-        try{
+        try {
             facade.register(user);
         } catch (ResponseException e) {
             assertEquals(e.getMessage(), "Error: bad request");
@@ -77,7 +97,7 @@ public class ServerFacadeTests {
         assertNotEquals(authData, loginAuthData);
     }
 
-    @Test  
+    @Test
     void loginBad() throws Exception {
         // given
         UserData user = new UserData("player1", "password", "p1@email.com");
@@ -150,7 +170,7 @@ public class ServerFacadeTests {
         facade.createGame(authData.authToken(), "game1");
         facade.createGame(authData.authToken(), "game2");
 
-        // when 
+        // when
         Collection<GameSummaryData> gameList = facade.listGames(authData.authToken());
         List<GameSummaryData> gameListAsList = new ArrayList<>(gameList);
 
@@ -178,11 +198,8 @@ public class ServerFacadeTests {
         var authData = facade.register(user);
         int gameId = facade.createGame(authData.authToken(), "game1");
 
-        // when
-        facade.joinGame(authData.authToken(), "WHITE",gameId);
-
-        // then
-        
+        // when and then
+        assertDoesNotThrow(() -> facade.joinGame(authData.authToken(), "WHITE", gameId), "oops got an exception");
     }
 
     @Test

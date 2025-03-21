@@ -20,7 +20,6 @@ import dataaccess.memorydataaccess.GameDataMemoryAccess;
 import dataaccess.memorydataaccess.UserDataMemoryAccess;
 import dataaccess.DataAccessException;
 import dataaccess.sqldataaccess.*;
-import exception.ResponseException;
 
 public class Server {
     private final UserService userService;

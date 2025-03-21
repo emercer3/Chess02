@@ -11,7 +11,7 @@ public class PreClient {
   // private String userName = null;
   // private String authToken = null;
   private final String serverUrl;
-  private final ServerFacade server;
+  private final ServerFacade facade;
 
   
   public enum State {
@@ -20,7 +20,7 @@ public class PreClient {
   }
   
   public PreClient(String serverUrl) {
-    server = new ServerFacade(serverUrl);
+    facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
   }
 
@@ -31,7 +31,7 @@ public class PreClient {
       var params = Arrays.copyOfRange(tokens, 1, tokens.length);
       return switch (cmd) {
         case "register" -> register(params);
-        // case "login" -> login(params);
+        case "login" -> login(params);
         case "quit" -> "quit";
         default -> "help"; //help();
       };
@@ -45,7 +45,7 @@ public String register(String... params) throws ResponseException {
     UserData userData = new UserData(params[0], params[1], params[2]);
 
     try {
-      server.register(userData);
+      facade.register(userData);
     } catch (ResponseException e) {
       throw new ResponseException(400, "issue in input, refer to help for sytax");
     }
@@ -53,6 +53,12 @@ public String register(String... params) throws ResponseException {
   } 
   throw new ResponseException(400, "Expected: <username> <password> <email>");
 
+}
+
+public String login(String... params) throws ResponseException {
+  if (params.length == 2) {
+    return "dfg";
+  }
 }
   
 }

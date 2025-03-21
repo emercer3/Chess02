@@ -5,7 +5,6 @@ import exception.ResponseException;
 import java.io.*;
 import java.net.*;
 import java.util.Collection;
-import java.util.Map;
 
 import model.*;
 
@@ -50,9 +49,6 @@ public class ServerFacade {
         reqBody.write(reqData.getBytes());
       }
     }
-  }
-
-  private record MyError(String message) {
   }
 
   private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
