@@ -5,22 +5,19 @@ import static ui.EscapeSequences.*;
 
 public class REPL {
   private final PreClient preClient;
-  private State state;
-
-  private enum State {
-    SIGNEDIN,
-    SIGNEDOUT,
-    GAMEMODE
-  }
+  private final PostClient postClient;
+  private String state;
+  private String authToken;
 
   public REPL(String serverUrl) {
     preClient = new PreClient(serverUrl);
-    state = State.SIGNEDOUT;
+    postClient = new PostClient(serverUrl);
+    state = "signedout";
   }
 
   public void run() {
     System.out.println("Welcome to Online Chess, Sign in or Register to start.");
-    // System.out.print(preClient.help());
+    System.out.print(preClient.help());
 
     Scanner scanner = new Scanner(System.in);
     var result = "";
@@ -31,11 +28,14 @@ public class REPL {
 
       try {
         switch (state) {
-          case SIGNEDOUT:
+          case "signedout":
             result = preClient.eval(line);
-          case SIGNEDIN:
-            // result = postClient.eval(line);
-          case GAMEMODE:
+            state = preClient.getState();
+            authToken = preClient.getAuthToken();
+          case "signedin":
+            result = postClient.eval(line, authToken);
+            state = preClient.getState();
+          case "gametime":
             // result = gameClient.eval(line);
         }
         System.out.print(result);
