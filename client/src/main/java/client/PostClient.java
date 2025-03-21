@@ -2,6 +2,7 @@ package client;
 
 import server.ServerFacade;
 import server.ServerFacade.gameName;
+import ui.BoardPrint;
 import exception.ResponseException;
 
 import com.google.gson.Gson;
@@ -34,6 +35,7 @@ public class PostClient {
         case "creategame" -> createGame(authToken, params);
         case "listgames" -> listGames(authToken);
         case "joingame" -> joinGame(authToken, params);
+        case "observegame" -> observeGame(authToken, params);
         case "quit" -> "quit";
         case "help" -> help();
         default -> help();
@@ -117,12 +119,19 @@ public class PostClient {
     return "inccorect number of inputs, please refer to help";
   }
 
+  public String observeGame(String authToken, String... params) {
+    BoardPrint.drawBoard(params[0]);
+    state = "gametime";
+    return "Observing the game...";
+  }
+
   public String help() {
     return """
         - logout
         - creategame <gamename>
         - listgames
         - joingame <Color(WHITE/BLACK)> <gameID>
+        - observegame <gameID> <color>
         - help
         """;
   }

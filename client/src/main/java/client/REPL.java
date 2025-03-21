@@ -6,12 +6,14 @@ import static ui.EscapeSequences.*;
 public class REPL {
   private final PreClient preClient;
   private final PostClient postClient;
+  private final GameClient gameClient;
   private String state;
   private String authToken;
 
   public REPL(String serverUrl) {
     preClient = new PreClient(serverUrl);
     postClient = new PostClient(serverUrl);
+    gameClient = new GameClient(serverUrl);
     state = "signedout";
   }
 
@@ -38,8 +40,9 @@ public class REPL {
             state = postClient.getState();
             break;
           } case "gametime":
-            // result = gameClient.eval(line);
-            // break;
+            result = gameClient.eval(line, authToken);
+            state = gameClient.getState();
+            break;
         }
         System.out.print(result);
       } catch (Throwable e) {
