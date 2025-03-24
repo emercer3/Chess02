@@ -26,7 +26,6 @@ public class GameClient {
   }
 
   public String eval(String input, String authToken) {
-    // try {
     var tokens = input.toLowerCase().split(" ");
     var cmd = (tokens.length > 0) ? tokens[0] : "help";
     var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -36,9 +35,6 @@ public class GameClient {
       case "help" -> help();
       default -> help();
     };
-    // } catch (ResponseException e) {
-    // return e.getMessage();
-    // }
   }
 
   public String leaveGame() {
