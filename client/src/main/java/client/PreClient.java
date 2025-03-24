@@ -13,12 +13,11 @@ public class PreClient {
   private String state;
   private String authToken;
 
-  
   // public enum State {
-  //   SIGNEDIN,
-  //   SIGNEDOUT
+  // SIGNEDIN,
+  // SIGNEDOUT
   // }
-  
+
   public PreClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
@@ -69,7 +68,7 @@ public class PreClient {
       state = "signedin";
       authToken = authData.authToken();
       return "Logged in as " + userData.username() + ".";
-    } 
+    }
     throw new ResponseException(400, "Expected: <username> <password> <email>");
 
   }
@@ -105,5 +104,5 @@ public class PreClient {
         - help
         """;
   }
-  
+
 }

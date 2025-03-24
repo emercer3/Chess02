@@ -27,17 +27,17 @@ public class GameClient {
 
   public String eval(String input, String authToken) {
     // try {
-      var tokens = input.toLowerCase().split(" ");
-      var cmd = (tokens.length > 0) ? tokens[0] : "help";
-      var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-      return switch (cmd) {
-        case "leave" -> leaveGame();
-        case "quit" -> "quit";
-        case "help" -> help();
-        default -> help();
-      };
+    var tokens = input.toLowerCase().split(" ");
+    var cmd = (tokens.length > 0) ? tokens[0] : "help";
+    var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+    return switch (cmd) {
+      case "leavegame" -> leaveGame();
+      case "quit" -> "quit";
+      case "help" -> help();
+      default -> help();
+    };
     // } catch (ResponseException e) {
-    //   return e.getMessage();
+    // return e.getMessage();
     // }
   }
 
@@ -48,7 +48,7 @@ public class GameClient {
 
   public String help() {
     return """
-        - 
+        - leavegame
         - quit
         - help
         """;

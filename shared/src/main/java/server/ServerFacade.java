@@ -15,7 +15,8 @@ public class ServerFacade {
     serverUrl = url;
   }
 
-  private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass) throws ResponseException {
+  private <T> T makeRequest(String method, String path, String header, Object request, Class<T> responseClass)
+      throws ResponseException {
     try {
       URI uri = new URI(serverUrl + path);
       HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -45,7 +46,7 @@ public class ServerFacade {
     if (request != null) {
       http.addRequestProperty("Content-Type", "application/json");
       String reqData = new Gson().toJson(request);
-      try(OutputStream reqBody = http.getOutputStream()) {
+      try (OutputStream reqBody = http.getOutputStream()) {
         reqBody.write(reqData.getBytes());
       }
     }
@@ -96,7 +97,8 @@ public class ServerFacade {
 
   public Collection<GameSummaryData> listGames(String authToken) throws ResponseException {
     var path = "/game";
-    record listGamesResponse(Collection<GameSummaryData> games) {}
+    record listGamesResponse(Collection<GameSummaryData> games) {
+    }
     var response = this.makeRequest("GET", path, authToken, null, listGamesResponse.class);
     return response.games();
   }
@@ -126,8 +128,5 @@ public class ServerFacade {
     var path = "/db";
     this.makeRequest("DELETE", path, null, null, null);
   }
-
-
-
 
 }

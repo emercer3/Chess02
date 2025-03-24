@@ -8,12 +8,14 @@ import exception.ResponseException;
 import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import model.*;
 
 public class PostClient {
   private final String serverUrl;
   private final ServerFacade facade;
   private String state;
+  private final HashMap<Integer, Integer> gameIds = new HashMap<>();
 
   public PostClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
@@ -82,26 +84,31 @@ public class PostClient {
     if (gameList.isEmpty()) {
       return "No games available";
     }
+    int numbering = 1;
 
     StringBuilder result = new StringBuilder("Available Games:\n");
     for (GameSummaryData game : gameList) {
-      result.append("- Game ID: ").append(game.gameID())
-            .append(", Name: ").append(game.gameName())
-            .append(", White: ").append(game.whiteUsername())
-            .append(", Black: ").append(game.blackUsername())
-            .append("\n");
-   }
+      gameIds.put(numbering, game.gameID());
+      result.append("- Game " + numbering + ": ")
+          .append(", Name: ").append(game.gameName())
+          .append(", White: ").append(game.whiteUsername())
+          .append(", Black: ").append(game.blackUsername())
+          .append("\n");
+      numbering++;
+    }
 
-   return result.toString();
+    return result.toString();
   }
 
   public String joinGame(String authToken, String... params) throws ResponseException {
     if (params.length == 2) {
       String playerColor = params[0];
-      var gameId = Integer.parseInt(params[1]);
+      var gameNumber = Integer.parseInt(params[1]);
+      int gameId = gameIds.get(gameNumber);
 
       try {
         facade.joinGame(authToken, playerColor, gameId);
+        BoardPrint.drawBoard(playerColor);
       } catch (ResponseException e) {
         String msg;
         if (e.getMessage().equals("Error: bad request")) {
@@ -109,7 +116,7 @@ public class PostClient {
         } else if (e.getMessage().equals("Error: already taken")) {
           throw new ResponseException(403, "Color is already taken, choose other");
         } else {
-          throw new ResponseException( 500, "issue in input, refer to help for sytax");
+          throw new ResponseException(500, "issue in input, refer to help for sytax");
         }
       }
       state = "gametime";

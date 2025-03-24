@@ -35,11 +35,13 @@ public class REPL {
             state = preClient.getState();
             authToken = preClient.getAuthToken();
             break;
-          } case "signedin": {
+          }
+          case "signedin": {
             result = postClient.eval(line, authToken);
             state = postClient.getState();
             break;
-          } case "gametime":
+          }
+          case "gametime":
             result = gameClient.eval(line, authToken);
             state = gameClient.getState();
             break;
