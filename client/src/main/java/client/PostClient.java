@@ -1,7 +1,7 @@
 package client;
 
 import server.ServerFacade;
-import server.ServerFacade.gameName;
+import server.ServerFacade.GameName;
 import ui.BoardPrint;
 import exception.ResponseException;
 

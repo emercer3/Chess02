@@ -97,21 +97,21 @@ public class ServerFacade {
 
   public Collection<GameSummaryData> listGames(String authToken) throws ResponseException {
     var path = "/game";
-    record listGamesResponse(Collection<GameSummaryData> games) {
+    record ListGamesResponse(Collection<GameSummaryData> games) {
     }
-    var response = this.makeRequest("GET", path, authToken, null, listGamesResponse.class);
+    var response = this.makeRequest("GET", path, authToken, null, ListGamesResponse.class);
     return response.games();
   }
 
-  public record gameName(String gameName) {
+  public record GameName(String gameName) {
   }
 
-  private record gameID(int gameID) {
+  private record GameID(int gameID) {
   }
 
   public int createGame(String authToken, String gameName) throws ResponseException {
     var path = "/game";
-    gameID gameId = this.makeRequest("POST", path, authToken, new gameName(gameName), gameID.class);
+    GameID gameId = this.makeRequest("POST", path, authToken, new GameName(gameName), GameID.class);
     return gameId.gameID();
   }
 
