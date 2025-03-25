@@ -12,7 +12,7 @@ public class BoardPrint {
     int greyPieces = 8;
     int[] numbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     reverseArray(numbers);
-    String[] letters = {"", "a", "b", "c", "d", "e", "f", "g", "h"};
+    String[] letters = {"", "a", "b", "c", "d", "e", "f", "g", "h", ""};
     String[] pieces = {"", "r", "k", "b", "q", "k", "b", "k", "r"};
     
 
@@ -21,7 +21,6 @@ public class BoardPrint {
       greyPawn = 2;
       redPieces = 8;
       greyPieces = 1;
-      previous = 1;
       reverseArray(numbers);
       reverseArray(letters);
   }

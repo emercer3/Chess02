@@ -107,12 +107,28 @@ public class PostClient {
   public String joinGame(String authToken, String... params) throws ResponseException {
     if (params.length == 2) {
       String playerColor = params[0].toUpperCase();
-      var gameNumber = Integer.parseInt(params[1]);
-      int gameId = gameIds.get(gameNumber);
+      int gameNumber;
+
+      try {
+        gameNumber = Integer.parseInt(params[1]);
+      } catch (NumberFormatException e) {
+        return "game number must be a number";
+      }
+      int gameId;
+
+      if (playerColor == null || (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
+        return "Color must be white or black";
+      }
+
+      try {
+        gameId = gameIds.get(gameNumber);
+      } catch (Exception e) {
+        return "invalid game ID";
+      }
 
       try {
         facade.joinGame(authToken, playerColor, gameId);
-        BoardPrint.drawBoard(playerColor);
+        BoardPrint.drawBoard(params[0]);
       } catch (ResponseException e) {
         String msg;
         if (e.getMessage().equals("Error: bad request")) {
@@ -131,13 +147,13 @@ public class PostClient {
   }
 
   public String observeGame(String authToken, String... params) {
-    var gameNumber = Integer.parseInt(params[1]);;
+    var gameNumber = Integer.parseInt(params[0]);
     try {
       int gameId = gameIds.get(gameNumber);
     } catch (Exception e) {
       return "invalid game ID";
     }
-    BoardPrint.drawBoard(params[0]);
+    BoardPrint.drawBoard("white");
     state = "gametime";
     return "Observing the game...";
   }
