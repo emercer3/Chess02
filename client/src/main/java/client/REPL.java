@@ -19,7 +19,7 @@ public class REPL {
 
   public void run() {
     System.out.println("Welcome to Online Chess, Sign in or Register to start.");
-    System.out.print(preClient.help());
+    System.out.print(preClient.prehelp());
 
     Scanner scanner = new Scanner(System.in);
     var result = "";
@@ -32,18 +32,21 @@ public class REPL {
         switch (state) {
           case "signedout": {
             result = preClient.eval(line);
-            state = preClient.getState();
+            this.state = preClient.getState();
             authToken = preClient.getAuthToken();
+            preClient.setState("signedout");
             break;
           }
           case "signedin": {
             result = postClient.eval(line, authToken);
-            state = postClient.getState();
+            this.state = postClient.getState();
+            postClient.setState("signedin");
             break;
           }
           case "gametime":
             result = gameClient.eval(line, authToken);
-            state = gameClient.getState();
+            this.state = gameClient.getState();
+            gameClient.setState("gametime");
             break;
         }
         System.out.print(result);

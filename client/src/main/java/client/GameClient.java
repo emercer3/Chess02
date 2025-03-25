@@ -18,11 +18,15 @@ public class GameClient {
   public GameClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
-    this.state = "signedout";
+    this.state = "gametime";
   }
 
   public String getState() {
-    return state;
+    return this.state;
+  }
+
+  public void setState(String inOrOut) {
+    this.state = inOrOut;
   }
 
   public String eval(String input, String authToken) {
@@ -38,7 +42,7 @@ public class GameClient {
   }
 
   public String leaveGame() {
-    state = "signedin";
+    this.state = "signedin";
     return "Game left";
   }
 

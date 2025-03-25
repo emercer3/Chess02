@@ -70,7 +70,6 @@ public class UserService {
       if (authData == null) {
         throw new DataAccessException("Error: unauthorized");
       }
-      userDataAccess.deleteUserData(authData.username());
       authDataAccess.deleteAuth(authToken);
     } catch (DataAccessException e) {
       throw new DataAccessException("Error: unauthorized");

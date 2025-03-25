@@ -13,10 +13,6 @@ public class PreClient {
   private String state;
   private String authToken;
 
-  // public enum State {
-  // SIGNEDIN,
-  // SIGNEDOUT
-  // }
 
   public PreClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
@@ -26,7 +22,11 @@ public class PreClient {
   }
 
   public String getState() {
-    return state;
+    return this.state;
+  }
+
+  public void setState(String inOrOut) {
+    this.state = inOrOut;
   }
 
   public String getAuthToken() {
@@ -42,8 +42,8 @@ public class PreClient {
         case "register" -> register(params);
         case "login" -> login(params);
         case "quit" -> "quit";
-        case "help" -> help();
-        default -> "";
+        case "help" -> prehelp();
+        default -> prehelp();
       };
     } catch (ResponseException e) {
       return e.getMessage();
@@ -65,7 +65,7 @@ public class PreClient {
           throw new ResponseException(500, "issue in input, refer to help for sytax");
         }
       }
-      state = "signedin";
+      this.state = "signedin";
       authToken = authData.authToken();
       return "Logged in as " + userData.username() + ".";
     }
@@ -89,14 +89,14 @@ public class PreClient {
           throw new ResponseException(500, "issue in input, refer to help for sytax");
         }
       }
-      state = "signedin";
+      this.state = "signedin";
       authToken = authData.authToken();
       return "Logged in as " + userName + ".";
     }
     throw new ResponseException(500, "Expected: <username> <password>");
   }
 
-  public String help() {
+  public String prehelp() {
     return """
         - register <username> <password> <email>
         - login <username> <password>

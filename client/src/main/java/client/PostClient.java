@@ -24,7 +24,11 @@ public class PostClient {
   }
 
   public String getState() {
-    return state;
+    return this.state;
+  }
+
+  public void setState(String inOrOut) {
+    this.state = inOrOut;
   }
 
   public String eval(String input, String authToken) {
@@ -39,8 +43,8 @@ public class PostClient {
         case "joingame" -> joinGame(authToken, params);
         case "observegame" -> observeGame(authToken, params);
         case "quit" -> "quit";
-        case "help" -> help();
-        default -> help();
+        case "help" -> posthelp();
+        default -> posthelp();
       };
     } catch (ResponseException e) {
       return e.getMessage();
@@ -53,7 +57,7 @@ public class PostClient {
     } catch (ResponseException e) {
       throw new ResponseException(500, e.getMessage());
     }
-    state = "signedout";
+    this.state = "signedout";
     return "Successfully logged out.";
   }
 
@@ -89,7 +93,7 @@ public class PostClient {
     StringBuilder result = new StringBuilder("Available Games:\n");
     for (GameSummaryData game : gameList) {
       gameIds.put(numbering, game.gameID());
-      result.append("- Game " + numbering + ": ")
+      result.append( numbering + ") ")
           .append(", Name: ").append(game.gameName())
           .append(", White: ").append(game.whiteUsername())
           .append(", Black: ").append(game.blackUsername())
@@ -102,7 +106,7 @@ public class PostClient {
 
   public String joinGame(String authToken, String... params) throws ResponseException {
     if (params.length == 2) {
-      String playerColor = params[0];
+      String playerColor = params[0].toUpperCase();
       var gameNumber = Integer.parseInt(params[1]);
       int gameId = gameIds.get(gameNumber);
 
@@ -127,12 +131,18 @@ public class PostClient {
   }
 
   public String observeGame(String authToken, String... params) {
+    var gameNumber = Integer.parseInt(params[1]);;
+    try {
+      int gameId = gameIds.get(gameNumber);
+    } catch (Exception e) {
+      return "invalid game ID";
+    }
     BoardPrint.drawBoard(params[0]);
     state = "gametime";
     return "Observing the game...";
   }
 
-  public String help() {
+  public String posthelp() {
     return """
         - logout
         - creategame <gamename>
