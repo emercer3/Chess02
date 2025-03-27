@@ -28,6 +28,7 @@ public class Server {
     private final dataaccess.UserDataAccess userData;
     private final dataaccess.AuthDataAccess authData;
     private final dataaccess.GameDataAccess gameData;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         
@@ -39,6 +40,7 @@ public class Server {
             throw new RuntimeException();
         }
 
+        this.webSocketHandler = new WebSocketHandler();
         this.userService = new UserService(userData, authData);
         this.gameService = new GameService(gameData, authData);
         this.authService = new AuthService(authData);
@@ -67,6 +69,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::deleteHandler);
