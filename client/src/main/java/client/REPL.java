@@ -3,7 +3,10 @@ package client;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
-public class REPL {
+import websocket.*;
+import webSocket.NotificationHandler;
+
+public class REPL implements NotificationHandler {
   private final PreClient preClient;
   private final PostClient postClient;
   private final GameClient gameClient;

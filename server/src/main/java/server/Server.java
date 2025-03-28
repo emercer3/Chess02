@@ -8,7 +8,7 @@ import java.util.Collection;
 import org.mindrot.jbcrypt.BCrypt;
 
 import spark.*;
-
+import websocket.*;
 import model.UserData;
 import model.AuthData;
 import model.GameSummaryData;
@@ -40,7 +40,7 @@ public class Server {
             throw new RuntimeException();
         }
 
-        this.webSocketHandler = new WebSocketHandler();
+        this.webSocketHandler = new WebSocketHandler(userData, authData, gameData);             // need to give DAO
         this.userService = new UserService(userData, authData);
         this.gameService = new GameService(gameData, authData);
         this.authService = new AuthService(authData);
