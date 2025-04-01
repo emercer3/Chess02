@@ -4,6 +4,7 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 import websocket.*;
+import websocket.messages.ServerMessage;
 import webSocket.NotificationHandler;
 
 public class REPL implements NotificationHandler {
@@ -63,5 +64,9 @@ public class REPL implements NotificationHandler {
 
   private void printPrompt() {
     System.out.print("\n" + ">>> ");
+  }
+
+  private void notify(ServerMessage serverMsg) {
+    ?? something
   }
 }

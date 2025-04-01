@@ -36,7 +36,7 @@ public class WebSocketHandler {
     switch(action.getCommandType()) {
       case CONNECT -> connect(action, session);
       case MAKE_MOVE -> makeMove(action, session);
-      case LEAVE -> leave();
+      case LEAVE -> leave(action, session);
       case RESIGN -> resign();
     }
   }
@@ -60,7 +60,7 @@ public class WebSocketHandler {
 
     var loadGame = new ServerMessage(ServerMessageType.LOAD_GAME);
     loadGame.setGame(game);
-    connections.broadcast(null, loadGame);          // how to not broadcast game to everyone.
+    connections.send(auth.username(), loadGame);          // how to not broadcast game to everyone.
 
   }
 
@@ -68,8 +68,20 @@ public class WebSocketHandler {
 
   }
 
-  private void leave() throws IOException {
+  private void leave(UserGameCommand userGameinfo, Session session) throws IOException {
+    AuthData auth = null;
 
+    try {
+      auth = authData.getAuthData(userGameinfo.getAuthToken());
+    } catch (Exception e) {
+
+    }
+
+    connections.remove(auth.username());
+    var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
+    var message = String.format("%s left the game ", auth.username());
+    notification.setMsg(message);
+    connections.broadcast(auth.username(), notification);
   }
 
   private void resign() throws IOException {
