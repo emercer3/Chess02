@@ -12,7 +12,8 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    private String msg;
+    private String message;
+    private String errorMessage;
     private GameData game;
 
     public enum ServerMessageType {
@@ -47,7 +48,11 @@ public class ServerMessage {
     }
 
     public void setMsg(String message) {
-        this.msg = message;
+        this.message = message;
+    }
+
+    public void setErrorMsg(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public void setGame(GameData game) {

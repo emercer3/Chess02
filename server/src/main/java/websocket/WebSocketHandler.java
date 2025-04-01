@@ -49,19 +49,28 @@ public class WebSocketHandler {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
       game = gameData.getGame(userGameinfo.getGameID());
     } catch (Exception e) {
+      var notification = new ServerMessage(ServerMessageType.ERROR);
+      var msg = String.format("%s inccorect gameID");
+      notification.setErrorMsg(msg);
+      connections.send(auth.username(), notification);
+    }
 
+    if (game == null) {
+      var notification = new ServerMessage(ServerMessageType.ERROR);
+      var msg = String.format("%s inccorect gameID");
+      notification.setErrorMsg(msg);
+      connections.send(auth.username(), notification);
     }
 
     connections.add(auth.username(), session);
     var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
-    var message = String.format("%s joined the game ", auth.username());
+    var message = String.format("%s joined the game", auth.username());
     notification.setMsg(message);
     connections.broadcast(auth.username(), notification);
 
     var loadGame = new ServerMessage(ServerMessageType.LOAD_GAME);
     loadGame.setGame(game);
-    connections.send(auth.username(), loadGame);          // how to not broadcast game to everyone.
-
+    connections.send(auth.username(), loadGame);
   }
 
   private void makeMove(UserGameCommand userGameinfo, Session session) throws IOException {
