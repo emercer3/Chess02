@@ -5,7 +5,7 @@ import static ui.EscapeSequences.*;
 
 import websocket.*;
 import websocket.messages.ServerMessage;
-import webSocket.NotificationHandler;
+import websocket.NotificationHandler;
 
 public class REPL implements NotificationHandler {
   private final PreClient preClient;
@@ -66,7 +66,7 @@ public class REPL implements NotificationHandler {
     System.out.print("\n" + ">>> ");
   }
 
-  private void notify(ServerMessage serverMsg) {
-    ?? something
+  public void notify(ServerMessage serverMsg) {
+    // ?? something
   }
 }

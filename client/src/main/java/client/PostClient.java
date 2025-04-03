@@ -130,7 +130,6 @@ public class PostClient {
         facade.joinGame(authToken, playerColor, gameId);
         BoardPrint.drawBoard(params[0]);
       } catch (ResponseException e) {
-        String msg;
         if (e.getMessage().equals("Error: bad request")) {
           throw new ResponseException(400, "not valid gameId");
         } else if (e.getMessage().equals("Error: already taken")) {
