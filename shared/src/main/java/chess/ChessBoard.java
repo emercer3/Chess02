@@ -110,4 +110,28 @@ public class ChessBoard {
             
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n");
+        for (int row = 7; row >= 0; row--) { // Print from top row (8) to bottom row (1)
+            builder.append(row + 1).append(" | "); // Add row number
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = squares[row][col];
+                if (piece == null) {
+                    builder.append(". "); // Empty square
+                } else {
+                    char pieceChar = piece.getPieceType().toString().charAt(0); // First letter of piece type
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        pieceChar = Character.toLowerCase(pieceChar); // Lowercase for black pieces
+                    }
+                    builder.append(pieceChar).append(" ");
+                }
+            }
+            builder.append("\n");
+        }
+        builder.append("    a b c d e f g h\n"); // Add column labels
+        return builder.toString();
+    }
 }

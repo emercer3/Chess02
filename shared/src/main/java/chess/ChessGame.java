@@ -51,6 +51,8 @@ public class ChessGame {
             makeTestMove(move, boardcopy);
 
             if (isInCheck(teamcolor) == false) {
+                makeTestMove(originalmove, boardcopy);
+                board.addPiece(move.getEndPosition(), piece2);
                 return true;
             } else if (piece1.getPieceType() == ChessPiece.PieceType.KING) {
                 moves.remove(move);

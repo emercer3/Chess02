@@ -78,11 +78,11 @@ public class WebSocketHandler {
 
   private void makeMove(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
-    GameData game = null;
+    GameData chessGameData = null;
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
-      game = gameData.getGame(userGameinfo.getGameID());
+      chessGameData = gameData.getGame(userGameinfo.getGameID());
     } catch (Exception e) {}
 
     if (auth == null) {
@@ -90,19 +90,39 @@ public class WebSocketHandler {
       notification.setErrorMsg("Error: unauthorized");
       session.getRemote().sendString(new Gson().toJson(notification));
       return;
-    } else if (game == null) {
+    } else if (chessGameData == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: inccorect gameID");
       connections.send(auth.username(), notification);
-    } else {
+    } else if (observerCheck(auth, chessGameData)) {
+      var notification = new ServerMessage(ServerMessageType.ERROR);
+      notification.setErrorMsg("Error: observers can't play");
+      connections.send(auth.username(), notification);
+    }
+    
+    else {
       ChessMove move = null;
       ChessGame chessGame = null;
 
       try {
         move = userGameinfo.getMove();
-        chessGame = game.game();
+        chessGame = chessGameData.game();
+
+        if (checkUsingOtherColorPiece(auth, chessGameData, chessGame, move)) {
+          var notification = new ServerMessage(ServerMessageType.ERROR);
+          notification.setErrorMsg("Error: can't move other color's pieces");
+          connections.send(auth.username(), notification);
+          return;
+        } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
+          var notification = new ServerMessage(ServerMessageType.ERROR);
+          notification.setErrorMsg("Error: Game is over");
+          connections.send(auth.username(), notification);
+          return;
+        }
+        
         chessGame.makeMove(move);
-        gameData.updateGame(game);
+        gameData.updateGame(chessGameData);
+
       } catch (Exception e) {
         var notification = new ServerMessage(ServerMessageType.ERROR);
         notification.setErrorMsg("Error: invalid move");
@@ -111,7 +131,7 @@ public class WebSocketHandler {
       }
 
       var loadGame = new ServerMessage(ServerMessageType.LOAD_GAME);
-      loadGame.setGame(game);
+      loadGame.setGame(chessGameData);
       connections.broadcast(null, loadGame);
 
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
@@ -126,24 +146,54 @@ public class WebSocketHandler {
     }
   }
 
+  private boolean checkUsingOtherColorPiece(AuthData auth, GameData game, ChessGame chessGame, ChessMove move) {
+    if (game.blackUsername() == auth.username() && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor().equals("BLACK")) {
+      return false;
+    } else if (game.whiteUsername() == auth.username() && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor().equals("WHITE")) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  private boolean observerCheck(AuthData auth, GameData game) {
+    if (auth.username().equals(game.whiteUsername()) || auth.username().equals(game.blackUsername())) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   private void leave(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
+    GameData game = null;
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
+      game = gameData.getGame(userGameinfo.getGameID());
     } catch (Exception e) {}
 
     if (auth == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
-      var msg = String.format("%s is unauthorized");
-      notification.setErrorMsg(msg);
-      connections.send(auth.username(), notification);
+      notification.setErrorMsg("Error: unauthorized");
+      session.getRemote().sendString(new Gson().toJson(notification));
+      return;
     } else {
       connections.remove(auth.username());
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
       var message = String.format("%s left the game ", auth.username());
       notification.setMsg(message);
       connections.broadcast(auth.username(), notification);
+      
+      GameData newGameData = game;
+      if (auth.username().equals(game.blackUsername())) {
+        newGameData = new GameData(userGameinfo.getGameID(), game.whiteUsername(), null, game.gameName(), game.game());
+      } else if (auth.username().equals(game.whiteUsername())) {
+        newGameData = new GameData(userGameinfo.getGameID(), null, game.blackUsername(), game.gameName(), game.game());
+      } 
+      try {
+        gameData.updateGame(newGameData);
+      } catch (Exception e) {}
     }
   }
 
