@@ -38,7 +38,7 @@ public class WebSocketHandler {
       case CONNECT -> connect(action, session);
       case MAKE_MOVE -> makeMove(action, session);
       case LEAVE -> leave(action, session);
-      case RESIGN -> resign();
+      case RESIGN -> resign(action, session);
     }
   }
 
@@ -98,7 +98,12 @@ public class WebSocketHandler {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: observers can't play");
       connections.send(auth.username(), notification);
-    }
+    } 
+    // else if (userGameinfo.getResigned()) {
+    //   var notification = new ServerMessage(ServerMessageType.ERROR);
+    //   notification.setErrorMsg("Error: no moves can be made after a resign");
+    //   connections.send(auth.username(), notification);
+    // }
     
     else {
       ChessMove move = null;
@@ -197,7 +202,32 @@ public class WebSocketHandler {
     }
   }
 
-  private void resign() throws IOException {
+  private void resign(UserGameCommand userGameinfo, Session session) throws IOException {
+    AuthData auth = null;
+    GameData chessGameData = null;
 
+    try {
+      auth = authData.getAuthData(userGameinfo.getAuthToken());
+      chessGameData = gameData.getGame(userGameinfo.getGameID());
+    } catch (Exception e) {}
+
+    if (observerCheck(auth, chessGameData)) {
+      var notification = new ServerMessage(ServerMessageType.ERROR);
+      notification.setErrorMsg("Error: observers can't resign");
+      connections.send(auth.username(), notification);
+      return;
+    } 
+    // else if (if already game over due to resign) {
+    //   var notification = new ServerMessage(ServerMessageType.ERROR);
+    //   notification.setErrorMsg("Error: game is already over");
+    //   connections.send(auth.username(), notification);
+    //   return;
+    // }
+
+    var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
+    var message = String.format("%s resigned the game ", auth.username());
+    notification.setMsg(message);
+    connections.broadcast(null, notification);
+    // userGameinfo.setResigened(true);
   }
 }

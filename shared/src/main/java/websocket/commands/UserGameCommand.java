@@ -27,7 +27,6 @@ public class UserGameCommand {
         this.authToken = authToken;
         this.gameID = gameID;
         this.move = chessMove;
-        // this.userName = userName;
     }
 
     public enum CommandType {
@@ -40,10 +39,6 @@ public class UserGameCommand {
     public CommandType getCommandType() {
         return commandType;
     }
-
-    // public String getUserName() {
-    //     return userName;
-    // }
 
     public String getAuthToken() {
         return authToken;
