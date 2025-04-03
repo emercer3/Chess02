@@ -147,9 +147,9 @@ public class WebSocketHandler {
   }
 
   private boolean checkUsingOtherColorPiece(AuthData auth, GameData game, ChessGame chessGame, ChessMove move) {
-    if (game.blackUsername() == auth.username() && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor().equals("BLACK")) {
+    if (game.blackUsername().equals(auth.username()) && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.BLACK) {
       return false;
-    } else if (game.whiteUsername() == auth.username() && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor().equals("WHITE")) {
+    } else if (game.whiteUsername().equals(auth.username()) && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.WHITE) {
       return false;
     } else {
       return true;
