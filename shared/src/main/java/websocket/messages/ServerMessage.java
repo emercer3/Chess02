@@ -30,6 +30,18 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public String getServerMsg() {
+        return message;
+    }
+
+    public String getServerErrorMsg() {
+        return errorMessage;
+    }
+
+    public GameData getGameData() {
+        return game;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

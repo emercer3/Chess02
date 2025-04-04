@@ -24,7 +24,8 @@ public class WebSocketHandler {
   private final dataaccess.AuthDataAccess authData;
   private final dataaccess.GameDataAccess gameData;
 
-  public WebSocketHandler(dataaccess.UserDataAccess userData, dataaccess.AuthDataAccess authData, dataaccess.GameDataAccess gameData) {
+  public WebSocketHandler(dataaccess.UserDataAccess userData, dataaccess.AuthDataAccess authData,
+      dataaccess.GameDataAccess gameData) {
     this.userData = userData;
     this.authData = authData;
     this.gameData = gameData;
@@ -33,8 +34,8 @@ public class WebSocketHandler {
   @OnWebSocketMessage
   public void onMessage(Session session, String message) throws IOException {
     UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-    
-    switch(action.getCommandType()) {
+
+    switch (action.getCommandType()) {
       case CONNECT -> connect(action, session);
       case MAKE_MOVE -> makeMove(action, session);
       case LEAVE -> leave(action, session);
@@ -50,15 +51,16 @@ public class WebSocketHandler {
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
       game = gameData.getGame(userGameinfo.getGameID());
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     if (auth == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: unauthorized");
       session.getRemote().sendString(new Gson().toJson(notification));
       return;
-    } 
-    
+    }
+
     connections.add(auth.username(), gameId, session);
 
     if (game == null) {
@@ -85,7 +87,8 @@ public class WebSocketHandler {
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
       chessGameData = gameData.getGame(userGameinfo.getGameID());
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     if (auth == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
@@ -101,7 +104,7 @@ public class WebSocketHandler {
       notification.setErrorMsg("Error: observers can't play");
       connections.send(auth.username(), gameId, notification);
     }
-    
+
     else {
       ChessMove move = null;
       ChessGame chessGame = null;
@@ -126,7 +129,7 @@ public class WebSocketHandler {
           connections.send(auth.username(), gameId, notification);
           return;
         }
-        
+
         chessGame.makeMove(move);
         gameData.updateGame(chessGameData);
 
@@ -146,23 +149,27 @@ public class WebSocketHandler {
       notification.setMsg(message);
       connections.broadcast(auth.username(), gameId, notification);
 
-      if (chessGame.isInCheckmate(chessGame.getTeamTurn()) || chessGame.isInStalemate(chessGame.getTeamTurn()) || chessGame.isInCheck(chessGame.getTeamTurn())) {
+      if (chessGame.isInCheckmate(chessGame.getTeamTurn()) || chessGame.isInStalemate(chessGame.getTeamTurn())
+          || chessGame.isInCheck(chessGame.getTeamTurn())) {
         var notify = new ServerMessage(ServerMessageType.NOTIFICATION);
         notify.setMsg("is in check/checkmate/stalemate");
         if (!chessGame.isInCheck(chessGame.getTeamTurn())) {
           chessGame.setGameOver(true);
           try {
             gameData.updateGame(chessGameData);
-          } catch (Exception e) {}              // might need to do something with this
+          } catch (Exception e) {
+          } // might need to do something with this
         }
       }
     }
   }
 
   private boolean checkUsingOtherColorPiece(AuthData auth, GameData game, ChessGame chessGame, ChessMove move) {
-    if (game.blackUsername().equals(auth.username()) && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.BLACK) {
+    if (game.blackUsername().equals(auth.username())
+        && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.BLACK) {
       return false;
-    } else if (game.whiteUsername().equals(auth.username()) && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.WHITE) {
+    } else if (game.whiteUsername().equals(auth.username())
+        && chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.WHITE) {
       return false;
     } else {
       return true;
@@ -185,7 +192,8 @@ public class WebSocketHandler {
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
       game = gameData.getGame(userGameinfo.getGameID());
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     if (auth == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
@@ -198,16 +206,17 @@ public class WebSocketHandler {
       var message = String.format("%s left the game ", auth.username());
       notification.setMsg(message);
       connections.broadcast(auth.username(), gameId, notification);
-      
+
       GameData newGameData = game;
       if (auth.username().equals(game.blackUsername())) {
         newGameData = new GameData(userGameinfo.getGameID(), game.whiteUsername(), null, game.gameName(), game.game());
       } else if (auth.username().equals(game.whiteUsername())) {
         newGameData = new GameData(userGameinfo.getGameID(), null, game.blackUsername(), game.gameName(), game.game());
-      } 
+      }
       try {
         gameData.updateGame(newGameData);
-      } catch (Exception e) {}
+      } catch (Exception e) {
+      }
     }
   }
 
@@ -219,7 +228,8 @@ public class WebSocketHandler {
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
       chessGameData = gameData.getGame(userGameinfo.getGameID());
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     if (observerCheck(auth, chessGameData)) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
@@ -240,6 +250,7 @@ public class WebSocketHandler {
     chessGameData.game().setGameOver(true);
     try {
       gameData.updateGame(chessGameData);
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
   }
 }

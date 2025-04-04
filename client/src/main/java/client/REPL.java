@@ -7,7 +7,7 @@ import websocket.*;
 import websocket.messages.ServerMessage;
 import websocket.NotificationHandler;
 
-public class REPL implements NotificationHandler {
+public class REPL {
   private final PreClient preClient;
   private final PostClient postClient;
   private final GameClient gameClient;
@@ -16,7 +16,7 @@ public class REPL implements NotificationHandler {
 
   public REPL(String serverUrl) {
     preClient = new PreClient(serverUrl);
-    postClient = new PostClient(serverUrl, this);
+    postClient = new PostClient(serverUrl);
     gameClient = new GameClient(serverUrl);
     state = "signedout";
   }
@@ -64,9 +64,5 @@ public class REPL implements NotificationHandler {
 
   private void printPrompt() {
     System.out.print("\n" + ">>> ");
-  }
-
-  public void notify(ServerMessage serverMsg) {
-    // ?? something
   }
 }

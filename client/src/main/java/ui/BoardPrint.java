@@ -2,9 +2,11 @@ package ui;
 
 import static ui.EscapeSequences.*;
 
+import chess.*;
+
 public class BoardPrint {
   
-  public static void drawBoard(String color) {
+  public static void drawBoard(String color, ChessGame game) {
     int previous = -1;
     int redPawn = 2;
     int greyPawn = 7;

@@ -2,8 +2,6 @@ package client;
 
 import server.ServerFacade;
 import ui.BoardPrint;
-import websocket.NotificationHandler;
-import websocket.WebSocketFacade;
 import exception.ResponseException;
 
 import com.google.gson.Gson;
@@ -15,15 +13,12 @@ import model.*;
 public class PostClient {
   private final String serverUrl;
   private final ServerFacade facade;
-  private final NotificationHandler notificationHandler;
-  private WebSocketFacade ws;
   private String state;
   private final HashMap<Integer, Integer> gameIds = new HashMap<>();
 
-  public PostClient(String serverUrl, NotificationHandler notificationHandler) {
+  public PostClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
-    this.notificationHandler = notificationHandler;
     this.state = "signedin";
   }
 
@@ -132,7 +127,6 @@ public class PostClient {
 
       try {
         facade.joinGame(authToken, playerColor, gameId);
-        BoardPrint.drawBoard(params[0]);
       } catch (ResponseException e) {
         if (e.getMessage().equals("Error: bad request")) {
           throw new ResponseException(400, "not valid gameId");
@@ -143,8 +137,8 @@ public class PostClient {
         }
       }
       state = "gametime";
-      ws = new WebSocketFacade(serverUrl, notificationHandler);
-      ws.joinGame(authToken, gameId);
+      // ws = new WebSocketFacade(serverUrl, notificationHandler);
+      // ws.joinGame(authToken, gameId);
       return "Successfully joined game as " + playerColor;
     }
 
@@ -156,17 +150,17 @@ public class PostClient {
     int gameId;
     try {
       gameId = gameIds.get(gameNumber);
+
     } catch (Exception e) {
       return "invalid game ID";
     }
-    BoardPrint.drawBoard("white");
     state = "gametime";
-    try {
-      ws = new WebSocketFacade(serverUrl, notificationHandler);
-      ws.joinGame(authToken, gameId);
-    } catch (ResponseException e) {
-      //not sure
-    }
+    // try {
+    //   ws = new WebSocketFacade(serverUrl, notificationHandler);
+    //   ws.joinGame(authToken, gameId);
+    // } catch (ResponseException e) {
+    //   //not sure
+    // }
     return "Observing the game...";
   }
 
