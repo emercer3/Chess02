@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private ChessGame.TeamColor turn = TeamColor.WHITE;
+    private boolean gameOver = false;
 
     public ChessGame() {
         board.resetBoard();
@@ -39,6 +40,14 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    public void setGameOver(boolean over) {
+        this.gameOver = over;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     private boolean canKingEscape(ChessPosition position, Collection<ChessMove> moves, TeamColor teamcolor) {

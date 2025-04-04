@@ -45,6 +45,7 @@ public class WebSocketHandler {
   private void connect(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
     GameData game = null;
+    int gameId = userGameinfo.getGameID();
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
@@ -58,27 +59,28 @@ public class WebSocketHandler {
       return;
     } 
     
-    connections.add(auth.username(), session);
+    connections.add(auth.username(), gameId, session);
 
     if (game == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: inccorect gameID");
-      connections.send(auth.username(), notification);
+      connections.send(auth.username(), gameId, notification);
     } else {
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
       var message = String.format("%s joined the game", auth.username());
       notification.setMsg(message);
-      connections.broadcast(auth.username(), notification);
+      connections.broadcast(auth.username(), gameId, notification);
 
       var loadGame = new ServerMessage(ServerMessageType.LOAD_GAME);
       loadGame.setGame(game);
-      connections.send(auth.username(), loadGame);
+      connections.send(auth.username(), gameId, loadGame);
     }
   }
 
   private void makeMove(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
     GameData chessGameData = null;
+    int gameId = userGameinfo.getGameID();
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
@@ -93,17 +95,12 @@ public class WebSocketHandler {
     } else if (chessGameData == null) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: inccorect gameID");
-      connections.send(auth.username(), notification);
+      connections.send(auth.username(), gameId, notification);
     } else if (observerCheck(auth, chessGameData)) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: observers can't play");
-      connections.send(auth.username(), notification);
-    } 
-    // else if (userGameinfo.getResigned()) {
-    //   var notification = new ServerMessage(ServerMessageType.ERROR);
-    //   notification.setErrorMsg("Error: no moves can be made after a resign");
-    //   connections.send(auth.username(), notification);
-    // }
+      connections.send(auth.username(), gameId, notification);
+    }
     
     else {
       ChessMove move = null;
@@ -116,12 +113,17 @@ public class WebSocketHandler {
         if (checkUsingOtherColorPiece(auth, chessGameData, chessGame, move)) {
           var notification = new ServerMessage(ServerMessageType.ERROR);
           notification.setErrorMsg("Error: can't move other color's pieces");
-          connections.send(auth.username(), notification);
+          connections.send(auth.username(), gameId, notification);
           return;
         } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
           var notification = new ServerMessage(ServerMessageType.ERROR);
           notification.setErrorMsg("Error: Game is over");
-          connections.send(auth.username(), notification);
+          connections.send(auth.username(), gameId, notification);
+          return;
+        } else if (chessGameData.game().isGameOver()) {
+          var notification = new ServerMessage(ServerMessageType.ERROR);
+          notification.setErrorMsg("Error: game is already over");
+          connections.send(auth.username(), gameId, notification);
           return;
         }
         
@@ -131,22 +133,28 @@ public class WebSocketHandler {
       } catch (Exception e) {
         var notification = new ServerMessage(ServerMessageType.ERROR);
         notification.setErrorMsg("Error: invalid move");
-        connections.send(auth.username(), notification);
+        connections.send(auth.username(), gameId, notification);
         return;
       }
 
       var loadGame = new ServerMessage(ServerMessageType.LOAD_GAME);
       loadGame.setGame(chessGameData);
-      connections.broadcast(null, loadGame);
+      connections.broadcast(null, gameId, loadGame);
 
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
       var message = String.format("%s made move" + move, auth.username());
       notification.setMsg(message);
-      connections.broadcast(auth.username(), notification);
+      connections.broadcast(auth.username(), gameId, notification);
 
       if (chessGame.isInCheckmate(chessGame.getTeamTurn()) || chessGame.isInStalemate(chessGame.getTeamTurn()) || chessGame.isInCheck(chessGame.getTeamTurn())) {
         var notify = new ServerMessage(ServerMessageType.NOTIFICATION);
         notify.setMsg("is in check/checkmate/stalemate");
+        if (!chessGame.isInCheck(chessGame.getTeamTurn())) {
+          chessGame.setGameOver(true);
+          try {
+            gameData.updateGame(chessGameData);
+          } catch (Exception e) {}              // might need to do something with this
+        }
       }
     }
   }
@@ -172,6 +180,7 @@ public class WebSocketHandler {
   private void leave(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
     GameData game = null;
+    int gameId = userGameinfo.getGameID();
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
@@ -184,11 +193,11 @@ public class WebSocketHandler {
       session.getRemote().sendString(new Gson().toJson(notification));
       return;
     } else {
-      connections.remove(auth.username());
+      connections.remove(auth.username(), gameId);
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
       var message = String.format("%s left the game ", auth.username());
       notification.setMsg(message);
-      connections.broadcast(auth.username(), notification);
+      connections.broadcast(auth.username(), gameId, notification);
       
       GameData newGameData = game;
       if (auth.username().equals(game.blackUsername())) {
@@ -205,6 +214,7 @@ public class WebSocketHandler {
   private void resign(UserGameCommand userGameinfo, Session session) throws IOException {
     AuthData auth = null;
     GameData chessGameData = null;
+    int gameId = userGameinfo.getGameID();
 
     try {
       auth = authData.getAuthData(userGameinfo.getAuthToken());
@@ -214,20 +224,22 @@ public class WebSocketHandler {
     if (observerCheck(auth, chessGameData)) {
       var notification = new ServerMessage(ServerMessageType.ERROR);
       notification.setErrorMsg("Error: observers can't resign");
-      connections.send(auth.username(), notification);
+      connections.send(auth.username(), gameId, notification);
       return;
-    } 
-    // else if (if already game over due to resign) {
-    //   var notification = new ServerMessage(ServerMessageType.ERROR);
-    //   notification.setErrorMsg("Error: game is already over");
-    //   connections.send(auth.username(), notification);
-    //   return;
-    // }
+    } else if (chessGameData.game().isGameOver()) {
+      var notification = new ServerMessage(ServerMessageType.ERROR);
+      notification.setErrorMsg("Error: game is already over");
+      connections.send(auth.username(), gameId, notification);
+      return;
+    }
 
     var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
     var message = String.format("%s resigned the game ", auth.username());
     notification.setMsg(message);
-    connections.broadcast(null, notification);
-    // userGameinfo.setResigened(true);
+    connections.broadcast(null, gameId, notification);
+    chessGameData.game().setGameOver(true);
+    try {
+      gameData.updateGame(chessGameData);
+    } catch (Exception e) {}
   }
 }
