@@ -16,7 +16,7 @@ public class REPL implements NotificationHandler {
 
   public REPL(String serverUrl) {
     preClient = new PreClient(serverUrl);
-    postClient = new PostClient(serverUrl);
+    postClient = new PostClient(serverUrl, this);
     gameClient = new GameClient(serverUrl);
     state = "signedout";
   }
