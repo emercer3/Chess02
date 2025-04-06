@@ -48,7 +48,8 @@ public class REPL {
             break;
           }
           case "gametime":
-            result = gameClient.eval(line, authToken);
+            int gameId = postClient.getGameId();
+            result = gameClient.eval(line, authToken, gameId);
             this.state = gameClient.getState();
             gameClient.setState("gametime");
             break;

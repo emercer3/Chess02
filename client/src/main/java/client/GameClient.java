@@ -22,11 +22,14 @@ public class GameClient implements NotificationHandler {
   private String state;
   private GameData gameData;
   private String color;
+  private boolean started;
+  private int gameId;
 
   public GameClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
     this.state = "gametime";
+    this.started = false;
   }
 
   public String getState() {
@@ -37,10 +40,14 @@ public class GameClient implements NotificationHandler {
     this.state = inOrOut;
   }
 
-  public String eval(String input, String authToken) {
+  public String eval(String input, String authToken, int gameId) {
     var tokens = input.toLowerCase().split(" ");
     var cmd = (tokens.length > 0) ? tokens[0] : "help";
     var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+    if (!started) {
+      startWebSocket(authToken, gameId);
+      started = true;
+    }
     return switch (cmd) {
       case "leavegame" -> leaveGame(authToken);
       case "redrawboard" -> redrawBoard();
@@ -51,6 +58,13 @@ public class GameClient implements NotificationHandler {
       case "help" -> help();
       default -> help();
     };
+  }
+
+  public void startWebSocket(String authToken, int gameId) {
+    try {
+      ws = new WebSocketFacade(serverUrl, notificationHandler);
+      ws.joinGame(authToken, gameId);
+    } catch (Exception e) {}
   }
 
   public String leaveGame(String authToken) {
@@ -65,12 +79,13 @@ public class GameClient implements NotificationHandler {
   }
 
   public String redrawBoard() {
-    BoardPrint.drawBoard(color, gameData.game());
+    BoardPrint.drawBoard(color, gameData.game(), false);
     return "\n";
   }
 
   public String makeMove() {
-    return "";
+    BoardPrint.drawBoard(color, gameData.game(), true);
+    return "\n";
   }
 
   public String resign() {
@@ -84,7 +99,10 @@ public class GameClient implements NotificationHandler {
   public String help() {
     return """
         - leavegame
-        - quit
+        - redrawboard
+        - makemove <x> <y> <x> <y> (first set current, second set new position)
+        - resign
+        - highlightmoves <x> <y> (of desired piecee moves to hightlight)
         - help
         """;
   }

@@ -15,6 +15,7 @@ public class PostClient {
   private final ServerFacade facade;
   private String state;
   private final HashMap<Integer, Integer> gameIds = new HashMap<>();
+  private int gId;
 
   public PostClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
@@ -28,6 +29,10 @@ public class PostClient {
 
   public void setState(String inOrOut) {
     this.state = inOrOut;
+  }
+
+  public int getGameId() {
+    return gId;
   }
 
   public String eval(String input, String authToken) {
@@ -137,8 +142,7 @@ public class PostClient {
         }
       }
       state = "gametime";
-      // ws = new WebSocketFacade(serverUrl, notificationHandler);
-      // ws.joinGame(authToken, gameId);
+      gId = gameId;
       return "Successfully joined game as " + playerColor;
     }
 
@@ -150,17 +154,11 @@ public class PostClient {
     int gameId;
     try {
       gameId = gameIds.get(gameNumber);
-
     } catch (Exception e) {
       return "invalid game ID";
     }
     state = "gametime";
-    // try {
-    //   ws = new WebSocketFacade(serverUrl, notificationHandler);
-    //   ws.joinGame(authToken, gameId);
-    // } catch (ResponseException e) {
-    //   //not sure
-    // }
+    gId = gameId;
     return "Observing the game...";
   }
 

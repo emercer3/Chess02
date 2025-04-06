@@ -79,7 +79,7 @@ public class ChessGame {
         board.addPiece(move.getStartPosition(), null);
     }
 
-    private Collection<ChessMove> getValidMoves(ChessPosition position, Collection<ChessMove> moves,
+    public Collection<ChessMove> getValidMoves(ChessPosition position, Collection<ChessMove> moves,
             TeamColor teamcolor) {
         ChessBoard boardcopy = board.copy();
         Collection<ChessMove> finalListFlaged = new ArrayList<ChessMove>();
