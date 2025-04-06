@@ -22,14 +22,11 @@ public class GameClient implements NotificationHandler {
   private String state;
   private GameData gameData;
   private String color;
-  private boolean started;
-  private int gameId;
 
   public GameClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
     this.state = "gametime";
-    this.started = false;
   }
 
   public String getState() {
@@ -40,28 +37,26 @@ public class GameClient implements NotificationHandler {
     this.state = inOrOut;
   }
 
-  public String eval(String input, String authToken, int gameId) {
+  public String eval(String input, String authToken) {
     var tokens = input.toLowerCase().split(" ");
     var cmd = (tokens.length > 0) ? tokens[0] : "help";
     var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-    if (!started) {
-      startWebSocket(authToken, gameId);
-      started = true;
-    }
     return switch (cmd) {
       case "leavegame" -> leaveGame(authToken);
       case "redrawboard" -> redrawBoard();
       case "makemove" -> makeMove();
       case "resign" -> resign();
-      case "highlightmoves" -> highLightMoves();
+      case "highlightmoves" -> highLightMoves(params);
       case "quit" -> "quit";
       case "help" -> help();
       default -> help();
     };
   }
 
-  public void startWebSocket(String authToken, int gameId) {
+  public void startWebSocket(String authToken, String color, int gameId) {
     try {
+      this.notificationHandler = this;
+      this.color = color;
       ws = new WebSocketFacade(serverUrl, notificationHandler);
       ws.joinGame(authToken, gameId);
     } catch (Exception e) {}
@@ -79,12 +74,13 @@ public class GameClient implements NotificationHandler {
   }
 
   public String redrawBoard() {
-    BoardPrint.drawBoard(color, gameData.game(), false);
+    BoardPrint.drawBoard(color, gameData.game(), null);
     return "\n";
   }
 
-  public String makeMove() {
-    BoardPrint.drawBoard(color, gameData.game(), true);
+  public String makeMove(String... params) {
+    // n
+    // BoardPrint.drawBoard(color, gameData.game(), true);
     return "\n";
   }
 
@@ -92,7 +88,8 @@ public class GameClient implements NotificationHandler {
     return "";
   }
 
-  public String highLightMoves() {
+  public String highLightMoves(String... params) {
+    BoardPrint.drawBoard(color, gameData.game(), new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
     return "";
   }
 
@@ -111,10 +108,13 @@ public class GameClient implements NotificationHandler {
     if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
       gameData = serverMsg.getGameData();
       redrawBoard();
+      System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
       System.out.print(serverMsg.getServerMsg());
+      System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
       System.out.print(serverMsg.getServerErrorMsg());
+      System.out.print("\n" + ">>> ");
     }
   }
 }

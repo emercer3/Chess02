@@ -16,11 +16,17 @@ public class PostClient {
   private String state;
   private final HashMap<Integer, Integer> gameIds = new HashMap<>();
   private int gId;
+  private String color;
+  private boolean run = false;
 
   public PostClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
     this.serverUrl = serverUrl;
     this.state = "signedin";
+  }
+
+  public boolean runQuestion() {
+    return run;
   }
 
   public String getState() {
@@ -35,8 +41,13 @@ public class PostClient {
     return gId;
   }
 
+  public String getColor() {
+    return color;
+  }
+
   public String eval(String input, String authToken) {
     try {
+      run = false;
       var tokens = input.toLowerCase().split(" ");
       var cmd = (tokens.length > 0) ? tokens[0] : "help";
       var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -143,6 +154,8 @@ public class PostClient {
       }
       state = "gametime";
       gId = gameId;
+      color = playerColor;
+      run = true;
       return "Successfully joined game as " + playerColor;
     }
 
@@ -159,6 +172,8 @@ public class PostClient {
     }
     state = "gametime";
     gId = gameId;
+    color = params[1];
+    run = true;
     return "Observing the game...";
   }
 

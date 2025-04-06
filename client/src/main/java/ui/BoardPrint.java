@@ -31,16 +31,20 @@ public class BoardPrint {
       ChessGame.TeamColor.WHITE, SET_TEXT_COLOR_RED,
       ChessGame.TeamColor.BLACK, SET_TEXT_COLOR_LIGHT_GREY
     );
+    Collection<ChessMove> validMoves = new ArrayList<>();
 
-    Collection<ChessMove> moves = new ArrayList<>();
-    Collection<ChessMove> validMoves = game.getValidMoves(highlight, moves, board.getPiece(highlight).getTeamColor());
-    
+    if (highlight != null) {
+      Collection<ChessMove> moves = new ArrayList<>();
+      validMoves = game.getValidMoves(highlight, moves, board.getPiece(highlight).getTeamColor());
+    }  
 
-    if (!color.equals("white")) {
+    if (!color.equals("WHITE")) {
       board = flipBoard(board);
       reverseArray(numbers);
       reverseArray(letters);
     }
+
+    System.out.print("\n");
 
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {

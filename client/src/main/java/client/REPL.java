@@ -45,11 +45,15 @@ public class REPL {
             result = postClient.eval(line, authToken);
             this.state = postClient.getState();
             postClient.setState("signedin");
+            if (postClient.runQuestion()) {
+              int gameId = postClient.getGameId();
+              String playerColor = postClient.getColor();
+              gameClient.startWebSocket(authToken, playerColor, gameId);
+            }
             break;
           }
           case "gametime":
-            int gameId = postClient.getGameId();
-            result = gameClient.eval(line, authToken, gameId);
+            result = gameClient.eval(line, authToken);
             this.state = gameClient.getState();
             gameClient.setState("gametime");
             break;
