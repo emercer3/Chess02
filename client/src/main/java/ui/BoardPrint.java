@@ -18,7 +18,8 @@ public class BoardPrint {
     int[] numbers = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     reverseArray(numbers);
     String[] letters = {"", "a", "b", "c", "d", "e", "f", "g", "h", ""};
-    ChessBoard board = game.getBoard();
+
+    ChessBoard board = game.getBoard().copy();
     Map<ChessPiece.PieceType, String> piecesMap = Map.of(
       ChessPiece.PieceType.PAWN, "p",
       ChessPiece.PieceType.KNIGHT, "n",
@@ -35,7 +36,7 @@ public class BoardPrint {
 
     if (highlight != null) {
       Collection<ChessMove> moves = new ArrayList<>();
-      validMoves = game.getValidMoves(highlight, moves, board.getPiece(highlight).getTeamColor());
+      validMoves = game.validMoves(highlight);
     }  
 
     if (!color.equals("WHITE")) {

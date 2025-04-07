@@ -44,7 +44,7 @@ public class GameClient implements NotificationHandler {
     return switch (cmd) {
       case "leavegame" -> leaveGame(authToken);
       case "redrawboard" -> redrawBoard();
-      case "makemove" -> makeMove();
+      case "makemove" -> makeMove(authToken, params);
       case "resign" -> resign();
       case "highlightmoves" -> highLightMoves(params);
       case "quit" -> "quit";
@@ -64,7 +64,7 @@ public class GameClient implements NotificationHandler {
 
   public String leaveGame(String authToken) {
     try {
-      ws = new WebSocketFacade(serverUrl, notificationHandler);
+      // ws = new WebSocketFacade(serverUrl, notificationHandler);
       ws.leaveGame(authToken, gameData.gameID());
     } catch (ResponseException e) {
       //not sure
@@ -78,9 +78,15 @@ public class GameClient implements NotificationHandler {
     return "\n";
   }
 
-  public String makeMove(String... params) {
-    // n
-    // BoardPrint.drawBoard(color, gameData.game(), true);
+  public String makeMove(String authToken, String... params) {
+    ChessPosition start = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+    ChessPosition newPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
+    try {
+      ws.makeMove(authToken, gameData.gameID(), new ChessMove(start, newPosition, null));
+    } catch (Exception e) {
+      System.out.print(e.getMessage());
+    }
+    // redrawBoard();
     return "\n";
   }
 
