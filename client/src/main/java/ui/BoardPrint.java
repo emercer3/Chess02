@@ -15,7 +15,7 @@ public class BoardPrint {
   public static void drawBoard(String color, ChessGame game, ChessPosition highlight) {
     int previous = -1;
 
-    int[] numbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    int[] numbers = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     reverseArray(numbers);
     String[] letters = {"", "a", "b", "c", "d", "e", "f", "g", "h", ""};
     ChessBoard board = game.getBoard();
@@ -46,7 +46,7 @@ public class BoardPrint {
 
     System.out.print("\n");
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 9; i >= 0; i--) {
       for (int j = 0; j < 10; j++) {
         if (i == 0 && j == 0) {
           System.out.print("   ");

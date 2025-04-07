@@ -97,9 +97,9 @@ public class GameClient implements NotificationHandler {
     return """
         - leavegame
         - redrawboard
-        - makemove <x> <y> <x> <y> (first set current, second set new position)
+        - makemove <row> <col> <row> <col> (first set current, second set new position)
         - resign
-        - highlightmoves <x> <y> (of desired piecee moves to hightlight)
+        - highlightmoves <row> <col> (of desired piecee moves to hightlight)
         - help
         """;
   }
