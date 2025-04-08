@@ -40,9 +40,11 @@ public class BoardPrint {
     }  
 
     if (!color.equals("WHITE")) {
-      board = flipBoard(board);
-      reverseArray(numbers);
-      reverseArray(letters);
+      // board = flipBoard(board);
+      // reverseArray(numbers);
+      // reverseArray(letters);
+      drawblack(letters, numbers, previous, board, highlight, piecesMap, colorMap, game, validMoves);
+      return;
     }
 
     System.out.print("\n");
@@ -81,9 +83,11 @@ public class BoardPrint {
               System.out.print(SET_BG_COLOR_WHITE + "   " + RESET_BG_COLOR);
             }
           } else {
-            
-            System.out.print(SET_BG_COLOR_WHITE + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-
+            if (validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_WHITE + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            }
           }
 
         } else {
@@ -98,9 +102,93 @@ public class BoardPrint {
               System.out.print(SET_BG_COLOR_BLACK + "   " + RESET_BG_COLOR);
             }
           } else {
+            if (validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_BLACK + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            }
+          }
 
-            System.out.print(SET_BG_COLOR_BLACK + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+        }
 
+      }
+      System.out.println();
+      previous = previous * -1;
+    }
+  }
+
+
+  public static void drawblack(
+    String[] letters,
+    int[] numbers,
+    int previous,
+    ChessBoard board,
+    ChessPosition highlight,
+    Map<ChessPiece.PieceType, String> piecesMap,
+    Map<ChessGame.TeamColor, String> colorMap,
+    ChessGame game,
+    Collection<ChessMove> validMoves
+) {
+    System.out.print("\n");
+
+    for (int i = 0; i < 10; i++) {
+      for (int j = 9; j >= 0; j--) {
+        if (i == 0 && j == 0) {
+          System.out.print("   ");
+        } else if (i == 0 && j == 9) {
+          System.out.print("   ");
+        } else if (i == 9 && j == 0) {
+          System.out.print("   ");
+        } else if (i == 9 && j == 9) {
+          System.out.print("   ");
+        } else if (i == 0 || i == 9) {
+          if (j > 0 && j < 9) {
+            System.out.print(SET_BG_COLOR_MAGENTA + SET_TEXT_COLOR_BLACK + " " + letters[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+          } else {
+            System.out.print(SET_BG_COLOR_MAGENTA + "   " + RESET_BG_COLOR);
+          }
+        } else if (j == 0 || j == 9) {
+          if (i > 0 && i < 9) {
+            System.out.print(SET_BG_COLOR_MAGENTA + SET_TEXT_COLOR_BLACK + " " + numbers[i] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+          } else {
+            System.out.print(SET_BG_COLOR_MAGENTA + "   " + RESET_BG_COLOR);
+          }
+        } else if (previous == 1) {
+          previous = -1;
+          ChessPosition position = new ChessPosition(i, j);
+          ChessMove validMove = new ChessMove(highlight, position, null);
+
+          if (board.getPiece(position) == null) {
+            if (highlight != null && validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + "   " + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_WHITE + "   " + RESET_BG_COLOR);
+            }
+          } else {
+            if (validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_WHITE + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            }
+          }
+
+        } else {
+          previous = 1;
+          ChessPosition position = new ChessPosition(i, j);
+          ChessMove validMove = new ChessMove(highlight, position, null);
+
+          if (board.getPiece(position) == null) {
+            if (highlight != null && validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + "   " + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_BLACK + "   " + RESET_BG_COLOR);
+            }
+          } else {
+            if (validMoves.contains(validMove)) {
+              System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            } else {
+              System.out.print(SET_BG_COLOR_BLACK + colorMap.get(board.getPiece(position).getTeamColor()) +  " " + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            }
           }
 
         }
@@ -125,81 +213,6 @@ public class BoardPrint {
     return flipped;
   }
   
-  // public static void drawBoard(String color, ChessGame game) {
-  //   int previous = -1;
-  //   int redPawn = 2;
-  //   int greyPawn = 7;
-  //   int redPieces = 1;
-  //   int greyPieces = 8;
-  //   int[] numbers = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  //   reverseArray(numbers);
-  //   String[] letters = {"", "a", "b", "c", "d", "e", "f", "g", "h", ""};
-  //   String[] pieces = {"", "r", "k", "b", "q", "k", "b", "k", "r"};
-    
-
-  //   if (!color.equals("white")) {
-  //     redPawn = 7;
-  //     greyPawn = 2;
-  //     redPieces = 8;
-  //     greyPieces = 1;
-  //     reverseArray(numbers);
-  //     reverseArray(letters);
-  // }
-    
-  //   for (int i = 0; i < 10; i++) {
-  //     for (int j = 0; j < 10; j++) {
-  //       if (i == 0 && j == 0) {
-  //         System.out.print("   ");
-  //       } else if (i == 0 && j == 9) {
-  //         System.out.print("   ");
-  //       } else if (i == 9 && j == 0) {
-  //         System.out.print("   ");
-  //       } else if (i == 9 && j == 9) {
-  //         System.out.print("   ");
-  //       } else if (i == 0 || i == 9) {
-  //         if (j > 0 && j < 9) {
-  //           System.out.print(SET_BG_COLOR_MAGENTA + SET_TEXT_COLOR_BLACK + " " + letters[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else {
-  //           System.out.print(SET_BG_COLOR_MAGENTA + "   " + RESET_BG_COLOR);
-  //         }
-  //       } else if (j == 0 || j == 9) {
-  //         if (i > 0 && i < 9) {
-  //           System.out.print(SET_BG_COLOR_MAGENTA + SET_TEXT_COLOR_BLACK + " " + numbers[i] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else {
-  //           System.out.print(SET_BG_COLOR_MAGENTA + "   " + RESET_BG_COLOR);
-  //         }
-  //       } else if (previous == 1) {
-  //         if (i == greyPawn) {
-  //           System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_LIGHT_GREY + " " + "p" + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == redPawn) {
-  //           System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_RED + " " + "p" + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == greyPieces) {
-  //           System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_LIGHT_GREY + " " + pieces[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == redPieces) {
-  //           System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_RED + " " + pieces[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else {
-  //           System.out.print(SET_BG_COLOR_WHITE + "   " + RESET_BG_COLOR);
-  //         }
-  //         previous = -1;
-  //       } else {
-  //         if (i == greyPawn) {
-  //           System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_LIGHT_GREY + " " + "p" + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == redPawn) {
-  //           System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_RED + " " + "p" + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == greyPieces) {
-  //           System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_LIGHT_GREY + " " + pieces[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else if (i == redPieces) {
-  //           System.out.print(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_RED + " " + pieces[j] + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-  //         } else {
-  //           System.out.print(SET_BG_COLOR_BLACK + "   " + RESET_BG_COLOR);
-  //         }
-  //         previous = 1;
-  //       }
-  //     }
-  //     System.out.println();
-  //     previous = previous * -1;
-  //   }
-  // }
 
   // Helper method to reverse an int array pulled from copilot
 private static void reverseArray(int[] array) {

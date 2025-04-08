@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 
 public class GameClient implements NotificationHandler {
   private final String serverUrl;
@@ -22,6 +23,13 @@ public class GameClient implements NotificationHandler {
   private String state;
   private GameData gameData;
   private String color;
+  private Map<String, ChessPiece.PieceType> pieces = Map.of(
+      "pawn", ChessPiece.PieceType.PAWN,
+      "knight", ChessPiece.PieceType.KNIGHT,
+      "bishop", ChessPiece.PieceType.BISHOP,
+      "rook", ChessPiece.PieceType.ROOK,
+      "queen", ChessPiece.PieceType.QUEEN
+    );
 
   public GameClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
@@ -64,11 +72,8 @@ public class GameClient implements NotificationHandler {
 
   public String leaveGame(String authToken) {
     try {
-      // ws = new WebSocketFacade(serverUrl, notificationHandler);
       ws.leaveGame(authToken, gameData.gameID());
-    } catch (ResponseException e) {
-      //not sure
-    }
+    } catch (ResponseException e) {}
     this.state = "signedin";
     return "Game left";
   }
@@ -83,8 +88,15 @@ public class GameClient implements NotificationHandler {
       return "inccorect input, expected <row> <col> <row> <col> <promote to> (first set current, second set new position)";
     }
 
+    ChessPiece.PieceType promotion = null;
     ChessPosition start = null;
     ChessPosition newPosition = null;
+
+    try {
+      promotion = pieces.get(params[4].toLowerCase());
+    } catch (Exception e) {
+      return "need promotion type";
+    }
 
     try {
       start = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
@@ -94,7 +106,7 @@ public class GameClient implements NotificationHandler {
     }
 
     try {
-      ws.makeMove(authToken, gameData.gameID(), new ChessMove(start, newPosition, null));
+      ws.makeMove(authToken, gameData.gameID(), new ChessMove(start, newPosition, promotion));
     } catch (Exception e) {
       return e.getMessage();
     }
