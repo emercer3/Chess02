@@ -46,7 +46,28 @@ public class BoardPrint {
 
     for (int i = 9; i >= 0; i--) {
       for (int j = 0; j < 10; j++) {
-        ChessPosition position = new ChessPosition(i, j);
+        print(i, j, previous, board, highlight);
+      }
+      System.out.println();
+      previous = previous * -1;
+    }
+  }
+
+  public static void drawblack(int previous, ChessBoard board, ChessPosition highlight, ChessGame game, int[] numbers) {
+
+    System.out.print("\n");
+
+    for (int i = 0; i < 10; i++) {
+      for (int j = 9; j >= 0; j--) {
+        print(i, j, previous, board, highlight);
+      }
+      System.out.println();
+      previous = previous * -1;
+    }
+  }
+
+  public static void print(int i, int j, int previous, ChessBoard board, ChessPosition highlight) {
+    ChessPosition position = new ChessPosition(i, j);
         ChessMove validMove = new ChessMove(highlight, position, null);
 
         if (i == 0 || i == 9 || j == 0 || j == 9) {
@@ -61,11 +82,6 @@ public class BoardPrint {
           previous = 1;
           black(i, j, board, position, highlight, validMove);
         }
-
-      }
-      System.out.println();
-      previous = previous * -1;
-    }
   }
 
 
@@ -128,35 +144,6 @@ public class BoardPrint {
         System.out.print(SET_BG_COLOR_BLACK + colorMap.get(board.getPiece(position).getTeamColor()) + " "
             + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
       }
-    }
-  }
-
-
-  public static void drawblack(int previous, ChessBoard board, ChessPosition highlight, ChessGame game, int[] numbers) {
-
-    System.out.print("\n");
-
-    for (int i = 0; i < 10; i++) {
-      for (int j = 9; j >= 0; j--) {
-        ChessPosition position = new ChessPosition(i, j);
-        ChessMove validMove = new ChessMove(highlight, position, null);
-
-        if (i == 0 || i == 9 || j == 0 || j == 9) {
-          margins(i, j);
-        }
-        else if (previous == 1) {
-          previous = -1;
-          white(i, j, board, position, highlight, validMove);
-        } 
-        
-        else {
-          previous = 1;
-          black(i, j, board, position, highlight, validMove);
-        }
-
-      }
-      System.out.println();
-      previous = previous * -1;
     }
   }
 

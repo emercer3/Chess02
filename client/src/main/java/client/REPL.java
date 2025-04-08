@@ -40,11 +40,7 @@ public class REPL {
             result = postClient.eval(line, authToken);
             this.state = postClient.getState();
             postClient.setState("signedin");
-            if (postClient.runQuestion()) {
-              int gameId = postClient.getGameId();
-              String playerColor = postClient.getColor();
-              gameClient.startWebSocket(authToken, playerColor, gameId);
-            }
+            runWebSocket();
             break;
           }
           case "gametime":
@@ -60,6 +56,14 @@ public class REPL {
       }
     }
     System.out.println();
+  }
+
+  private void runWebSocket() {
+    if (postClient.runQuestion()) {
+      int gameId = postClient.getGameId();
+      String playerColor = postClient.getColor();
+      gameClient.startWebSocket(authToken, playerColor, gameId);
+    }
   }
 
   private void printPrompt() {
