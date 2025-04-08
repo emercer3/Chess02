@@ -41,11 +41,13 @@ public class ChessBoard {
     // copilot generated
     public ChessBoard copy() {
         ChessBoard newBoard = new ChessBoard();
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPiece piece = this.getPiece(new ChessPosition(i, j));
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = this.getPiece(new ChessPosition(i + 1, j + 1));
                 if (piece != null) {
-                    newBoard.addPiece(new ChessPosition(i, j), piece.copy());
+                    // Create a new ChessPiece object to avoid referencing the same object
+                    ChessPiece copiedPiece = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                    newBoard.addPiece(new ChessPosition(i + 1, j + 1), copiedPiece);
                 }
             }
         }

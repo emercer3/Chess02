@@ -172,7 +172,7 @@ public class PostClient {
     }
     state = "gametime";
     gId = gameId;
-    color = params[1];
+    color = "white";
     run = true;
     return "Observing the game...";
   }
@@ -183,7 +183,7 @@ public class PostClient {
         - creategame <gamename>
         - listgames
         - joingame <Color(WHITE/BLACK)> <gameID>
-        - observegame <gameID> <color>
+        - observegame <gameID>
         - help
         """;
   }

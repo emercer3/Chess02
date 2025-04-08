@@ -45,7 +45,7 @@ public class GameClient implements NotificationHandler {
       case "leavegame" -> leaveGame(authToken);
       case "redrawboard" -> redrawBoard();
       case "makemove" -> makeMove(authToken, params);
-      case "resign" -> resign();
+      case "resign" -> resign(authToken);
       case "highlightmoves" -> highLightMoves(params);
       case "quit" -> "quit";
       case "help" -> help();
@@ -79,19 +79,36 @@ public class GameClient implements NotificationHandler {
   }
 
   public String makeMove(String authToken, String... params) {
-    ChessPosition start = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
-    ChessPosition newPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
+    if (params.length != 5) {
+      return "inccorect input, expected <row> <col> <row> <col> <promote to> (first set current, second set new position)";
+    }
+
+    ChessPosition start = null;
+    ChessPosition newPosition = null;
+
+    try {
+      start = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+      newPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
+    } catch (NumberFormatException ex) {
+      return "must be integers";
+    }
+
     try {
       ws.makeMove(authToken, gameData.gameID(), new ChessMove(start, newPosition, null));
     } catch (Exception e) {
-      System.out.print(e.getMessage());
+      return e.getMessage();
     }
-    // redrawBoard();
+
     return "\n";
   }
 
-  public String resign() {
-    return "";
+  public String resign(String authToken) {
+    try {
+      ws.resign(authToken, gameData.gameID());
+    } catch (ResponseException e) {
+      return e.getMessage();
+    }
+    return "\n";
   }
 
   public String highLightMoves(String... params) {
@@ -103,7 +120,7 @@ public class GameClient implements NotificationHandler {
     return """
         - leavegame
         - redrawboard
-        - makemove <row> <col> <row> <col> (first set current, second set new position)
+        - makemove <row> <col> <row> <col> <promote to> (first set current, second set new position)
         - resign
         - highlightmoves <row> <col> (of desired piecee moves to hightlight)
         - help
