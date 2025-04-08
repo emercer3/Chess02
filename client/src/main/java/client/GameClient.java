@@ -103,6 +103,10 @@ public class GameClient implements NotificationHandler {
       return "must be integers";
     }
 
+    // if (gameData.blackUsername() == null || gameData.whiteUsername() == null) {
+    //   return "waiting for other player to joing to make movees";
+    // }
+
     try {
       ws.makeMove(authToken, gameData.gameID(), new ChessMove(start, newPosition, promotion));
     } catch (Exception e) {

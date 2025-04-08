@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-  // private final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<Integer, ConcurrentHashMap<String, Connection>> games = new ConcurrentHashMap<>();
 
   public void add(String user, int gameId, Session session) {

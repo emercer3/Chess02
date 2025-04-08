@@ -36,7 +36,7 @@ public class BoardPrint {
       validMoves = game.validMoves(highlight);
     }
 
-    if (!color.equals("WHITE")) {
+    if (!color.equals("WHITE") && (!color.equals("observer"))) {
       reverseArray(localNumbers);
       drawblack(previous, board, highlight, game, localNumbers);
       return;

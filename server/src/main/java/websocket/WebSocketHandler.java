@@ -161,6 +161,7 @@ public class WebSocketHandler {
           || chessGame.isInCheck(chessGame.getTeamTurn())) {
         var notify = new ServerMessage(ServerMessageType.NOTIFICATION);
         notify.setMsg("is in check/checkmate/stalemate");
+        connections.broadcast(null, gameId, notify);
         if (!chessGame.isInCheck(chessGame.getTeamTurn())) {
           chessGame.setGameOver(true);
           try {
