@@ -144,7 +144,7 @@ public class GameClient implements NotificationHandler {
       redrawBoard();
       System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
-      System.out.print(serverMsg.getServerMsg() + color);
+      System.out.print(serverMsg.getServerMsg());
       System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
       System.out.print(serverMsg.getServerErrorMsg());

@@ -69,7 +69,15 @@ public class WebSocketHandler {
       connections.send(auth.username(), gameId, notification);
     } else {
       var notification = new ServerMessage(ServerMessageType.NOTIFICATION);
-      var message = String.format("%s joined the game", auth.username());
+      String color = "";
+      if (auth.username().equals(game.whiteUsername())) {
+        color = "white";
+      } else if (auth.username().equals(game.blackUsername())) {
+        color = "black";
+      } else {
+        color = "observer";
+      }
+      var message = String.format("%s joined the game as " + color, auth.username());
       notification.setMsg(message);
       connections.broadcast(auth.username(), gameId, notification);
 
