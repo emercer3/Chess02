@@ -46,7 +46,7 @@ public class BoardPrint {
 
     for (int i = 9; i >= 0; i--) {
       for (int j = 0; j < 10; j++) {
-        print(i, j, previous, board, highlight);
+        previous = print(i, j, previous, board, highlight);
       }
       System.out.println();
       previous = previous * -1;
@@ -59,14 +59,14 @@ public class BoardPrint {
 
     for (int i = 0; i < 10; i++) {
       for (int j = 9; j >= 0; j--) {
-        print(i, j, previous, board, highlight);
+        previous = print(i, j, previous, board, highlight);
       }
       System.out.println();
       previous = previous * -1;
     }
   }
 
-  public static void print(int i, int j, int previous, ChessBoard board, ChessPosition highlight) {
+  public static int print(int i, int j, int previous, ChessBoard board, ChessPosition highlight) {
     ChessPosition position = new ChessPosition(i, j);
         ChessMove validMove = new ChessMove(highlight, position, null);
 
@@ -82,6 +82,7 @@ public class BoardPrint {
           previous = 1;
           black(i, j, board, position, highlight, validMove);
         }
+        return previous;
   }
 
 
@@ -119,13 +120,17 @@ public class BoardPrint {
         System.out.print(SET_BG_COLOR_WHITE + "   " + RESET_BG_COLOR);
       }
     } else {
-      if (validMoves.contains(validMove)) {
-        System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) + " "
-            + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-      } else {
-        System.out.print(SET_BG_COLOR_WHITE + colorMap.get(board.getPiece(position).getTeamColor()) + " "
-            + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-      }
+      blackWhite(SET_BG_COLOR_WHITE, validMove, position, board);
+    }
+  }
+
+  public static void blackWhite(String colorToPrint, ChessMove validMove, ChessPosition position, ChessBoard board) {
+    if (validMoves.contains(validMove)) {
+      System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) + " "
+          + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
+    } else {
+      System.out.print(colorToPrint + colorMap.get(board.getPiece(position).getTeamColor()) + " "
+          + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
     }
   }
 
@@ -137,13 +142,7 @@ public class BoardPrint {
         System.out.print(SET_BG_COLOR_BLACK + "   " + RESET_BG_COLOR);
       }
     } else {
-      if (validMoves.contains(validMove)) {
-        System.out.print(SET_BG_COLOR_YELLOW + colorMap.get(board.getPiece(position).getTeamColor()) + " "
-            + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-      } else {
-        System.out.print(SET_BG_COLOR_BLACK + colorMap.get(board.getPiece(position).getTeamColor()) + " "
-            + piecesMap.get(board.getPiece(position).getPieceType()) + " " + RESET_TEXT_COLOR + RESET_BG_COLOR);
-      }
+      blackWhite(SET_BG_COLOR_BLACK, validMove, position, board);
     }
   }
 
