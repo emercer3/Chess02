@@ -1,10 +1,8 @@
 package client;
 
 import server.ServerFacade;
-import ui.BoardPrint;
 import exception.ResponseException;
 
-import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -108,7 +106,7 @@ public class PostClient {
     StringBuilder result = new StringBuilder("Available Games:\n");
     for (GameSummaryData game : gameList) {
       gameIds.put(numbering, game.gameID());
-      result.append( numbering + ") ")
+      result.append(numbering + ") ")
           .append(", Name: ").append(game.gameName())
           .append(", White: ").append(game.whiteUsername())
           .append(", Black: ").append(game.blackUsername())
@@ -172,7 +170,7 @@ public class PostClient {
     }
     state = "gametime";
     gId = gameId;
-    color = "white";
+    color = "observer";
     run = true;
     return "Observing the game...";
   }

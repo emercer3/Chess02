@@ -1,11 +1,6 @@
 package client;
 
 import java.util.Scanner;
-import static ui.EscapeSequences.*;
-
-import websocket.*;
-import websocket.messages.ServerMessage;
-import websocket.NotificationHandler;
 
 public class REPL {
   private final PreClient preClient;

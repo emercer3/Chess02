@@ -24,10 +24,10 @@ public class WebSocketFacade extends Endpoint {
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       this.session = container.connectToServer(this, socketUri);
 
-      this.session.addMessageHandler(new MessageHandler.Whole<String>(){
+      this.session.addMessageHandler(new MessageHandler.Whole<String>() {
         @Override
         public void onMessage(String message) {
-          ServerMessage msg =  new Gson().fromJson(message, ServerMessage.class);
+          ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
           notificationHandler.notify(msg);
         }
       });
@@ -76,5 +76,5 @@ public class WebSocketFacade extends Endpoint {
       throw new ResponseException(500, e.getMessage());
     }
   }
-  
+
 }

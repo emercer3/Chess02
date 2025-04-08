@@ -9,9 +9,6 @@ import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 import websocket.messages.ServerMessage;
 
-import com.google.gson.Gson;
-
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -28,8 +25,7 @@ public class GameClient implements NotificationHandler {
       "knight", ChessPiece.PieceType.KNIGHT,
       "bishop", ChessPiece.PieceType.BISHOP,
       "rook", ChessPiece.PieceType.ROOK,
-      "queen", ChessPiece.PieceType.QUEEN
-    );
+      "queen", ChessPiece.PieceType.QUEEN);
 
   public GameClient(String serverUrl) {
     facade = new ServerFacade(serverUrl);
@@ -67,13 +63,15 @@ public class GameClient implements NotificationHandler {
       this.color = color;
       ws = new WebSocketFacade(serverUrl, notificationHandler);
       ws.joinGame(authToken, gameId);
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
   }
 
   public String leaveGame(String authToken) {
     try {
       ws.leaveGame(authToken, gameData.gameID());
-    } catch (ResponseException e) {}
+    } catch (ResponseException e) {
+    }
     this.state = "signedin";
     return "Game left";
   }
@@ -124,7 +122,8 @@ public class GameClient implements NotificationHandler {
   }
 
   public String highLightMoves(String... params) {
-    BoardPrint.drawBoard(color, gameData.game(), new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
+    BoardPrint.drawBoard(color, gameData.game(),
+        new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
     return "";
   }
 
@@ -145,7 +144,7 @@ public class GameClient implements NotificationHandler {
       redrawBoard();
       System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
-      System.out.print(serverMsg.getServerMsg());
+      System.out.print(serverMsg.getServerMsg() + color);
       System.out.print("\n" + ">>> ");
     } else if (serverMsg.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
       System.out.print(serverMsg.getServerErrorMsg());
